@@ -228,9 +228,14 @@ class ChangeTable
 
             //类型
             if (isset($fieldInfo[2])) {
-                $tabStructItem['type'] = $fieldInfo[2] ? $fieldInfo[2] : 'int';
+                $tabStructItem['type'] = $fieldInfo[2] ? $fieldInfo[2] : 'varchar';
+
+                if(!isset($defaultLengthMap[$fieldInfo[2]])){
+                    $tabStructItem['type'] = 'varchar';
+                }
+
             } else {
-                $tabStructItem['type'] = 'int';
+                $tabStructItem['type'] = 'varchar';
             }
 
             //描述

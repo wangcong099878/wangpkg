@@ -34,7 +34,7 @@ class WangPkgServiceProvider extends ServiceProvider
 
         //发布静态资源
         $this->publishes([
-            __DIR__.'/Database/tab_struct' => base_path('tab_struct'),
+            __DIR__.'/Database/tab_struct' => base_path('tab_struct/preset'),
         ], 'public');
 
         //发布注册命令

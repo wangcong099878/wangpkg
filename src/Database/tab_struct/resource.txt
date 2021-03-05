@@ -1,0 +1,7 @@
+
+#resource=资源表
+name,名称basename,varchar
+path,路径,varchar
+domain,域名,varchar
+suffix,后缀,varchar
+source,来源?1=后台编辑器&2=前端编辑器&3=用户,varchar
