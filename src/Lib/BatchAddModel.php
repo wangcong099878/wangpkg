@@ -271,8 +271,10 @@ ABC;
 
         $columnInfoArr = $column->toArray();
 
+        //如果类型不支持则使用varchar
         $typeName = $column->getType()->getName();
-        $type = isset($typeMap[$typeName]) ? $typeMap[$typeName] : $typeName;
+        //$type = isset($typeMap[$typeName]) ? $typeMap[$typeName] : $typeName;
+        $type = isset($typeMap[$typeName]) ? $typeMap[$typeName] : 'varchar';
 
         if ($column->getType()->getName() == 'string') {
             if ($column->getFixed() == 1) {
