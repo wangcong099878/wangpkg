@@ -1,0 +1,50 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use Wang\Pkg\Lib\BatchAddModel;
+
+class DummyClass extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        $tableName = 'DummyTableName';
+        if (!Schema::hasTable($tableName)) {
+
+            DummyStateMap
+
+            Schema::create($tableName, function (Blueprint $table) use ($map) {
+                $table->bigIncrements('id');
+
+                DummyFields
+
+                $table->timestamps();
+
+                DummyIndexs
+            });
+
+
+            #创建model
+            BatchAddModel::addModel($tableName, true, true, BatchAddModel::createAssocMapList($map));
+            \DB::statement("ALTER TABLE `$tableName` comment 'DummyTabDescribe' ");
+        }
+
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('DummyTableName');
+    }
+}

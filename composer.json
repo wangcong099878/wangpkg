@@ -1,0 +1,35 @@
+{
+    "name": "wangcong099878/wangpkg",
+    "description": "laravel快捷开发工具",
+    "type": "library",
+    "keywords": ["laravel6", "extension"],
+    "homepage": "https://github.com/wangcong66688/wangpkg",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "王丛",
+            "email": "251957448@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wang\\Pkg\\": "src/"
+        },
+        "files": [
+            "src/helper.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Wang\\Pkg\\WangPkgServiceProvider"
+            ]
+        }
+    }
+}
