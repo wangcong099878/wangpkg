@@ -6,7 +6,7 @@
  * Time: 上午14:38
  */
 
-namespace Wang\Pkg\Admin\Controllers;
+namespace Wang\Pkg\Http\Admin\Controllers;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
