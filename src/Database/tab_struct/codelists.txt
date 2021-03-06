@@ -1,9 +1,0 @@
-
-#codelists=用户手机验证码表
-phone,手机号码,char,15,
-code,验证码,char,6,
-ip,,char,128,
-scene,业务场景?1=注册&2=登录&3=找回密码,tinyint,4,1
--ip
--phone
----

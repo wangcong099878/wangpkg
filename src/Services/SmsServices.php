@@ -13,7 +13,7 @@ use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
 use Wang\Pkg\Lib\Response;
 use App\Models\Codelist;
-
+use Wang\Pkg\Lib\Request;
 //composer require "alibabacloud/sdk"
 class SmsServices
 {
@@ -23,7 +23,7 @@ class SmsServices
     }
 
     //App\Services
-    //  App\Services\SmsServices::send();
+    //  Wang\Pkg\Services\SmsServices::send(13917645030);
     public static function send($phone, $scene = 1, $tag = "")
     {
         $code = mt_rand(100000, 999999);
@@ -33,7 +33,7 @@ class SmsServices
             $code = 888888;
         }
 
-        $ip = get_client_ip();
+        $ip = Request::getClientIp();
 
         $count = Codelist::where('ip', $ip)->whereBetween('created_at', [date("Y-m-d H:i:s", strtotime("-12 hour")), date("Y-m-d H:i:s")])->count();
 
