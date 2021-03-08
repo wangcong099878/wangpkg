@@ -249,16 +249,16 @@ class Moke
                 }
             } elseif ($condition == 'in') {
                 //包含在多个值里面
-                if(in_array($fieldData,$searchData)){
+                if (in_array($fieldData, $searchData)) {
                     $sign++;
                     if ($searchMode == '||') {
                         break;
                     }
                 }
 
-            }elseif ($condition == 'likeIn') {
+            } elseif ($condition == 'likeIn') {
                 //模糊包含在多个值里面
-                foreach($searchData as $likeKey){
+                foreach ($searchData as $likeKey) {
                     if (mb_stripos($fieldData, $likeKey) !== false) {
                         $sign++;
                         if ($searchMode == '||') {
@@ -319,7 +319,7 @@ class Moke
     }
 
     //初始化数据
-    public static function initData($apiName = 'default', $map = ['id' => 'int'], $dataNum = 200, $isCache = true)
+    public static function initData($apiName = 'default', $map = ['id' => 'int'], $dataNum = 200, $isCache = true, $startDate = '', $endDate = '')
     {
         try {
             $md5Name = md5($apiName);
@@ -340,9 +340,20 @@ class Moke
                         }
 
                         if ($v == 'created_at' || $v == 'updated_at') {
-                            $data[$v] = date('Y-m-d H:i:' . rand(0, 60));
+                            $data[$v] = self::randTime($endDate, $startDate);
                             continue;
                         }
+
+                        if ($v == 'rand_time') {
+                            $data[$v] = self::randTime($endDate, $startDate);
+                            continue;
+                        }
+
+                        if ($v == 'amount') {
+                            $data[$v] = self::randAmount();
+                            continue;
+                        }
+
 
                         //判断是否是匿名函数
                         if (is_callable($v)) {
@@ -358,26 +369,64 @@ class Moke
                             } catch (\Exception $e) {
                                 $data[$k] = '';
                             }
-                            //判断数组
+                        }
+                        //判断数组
+                        try {
+                            if (is_array($v)) {
+                                $num = rand(0, count($v)-1);
+                                $data[$k] = $v[$num];
+                            }
+                        } catch (\Exception $e) {
+                            $data[$k] = '';
                         }
                     }
 
-                    array_push($datas, $data);
+/*                        */
+
+                        array_push($datas, $data);
+                    }
+
+                    if ($isCache) {
+                        Cache::store('file')->add($md5Name, $datas, 60 * 60 * 24);
+                    }
+
+                }
+            else {
+                    //echo "有缓存";
                 }
 
-                if ($isCache) {
-                    Cache::store('file')->add($md5Name, $datas, 60 * 60 * 24);
-                }
-
-            } else {
-                //echo "有缓存";
+                return $datas;
+            }
+        catch
+            (\Exception $e) {
+                //errLog('liantong', "登录错误", $e);
             }
 
-            return $datas;
-        } catch (\Exception $e) {
-            //errLog('liantong', "登录错误", $e);
+    }
+
+    //随机金额  随机浮点数 \Wang\Pkg\Lib\Moke::randAmount();
+    public static function randAmount($maxNum = 1000, $scale = 2)
+    {
+
+        $seed = bcadd(rand(0, $maxNum * 100), rand(0, 100));
+
+        return bcdiv($seed, '100', $scale);
+        //bcadd()
+    }
+
+    //随机获取时间戳 默认是最近三个月
+    public static function randTime($endDate = '', $startDate = '')
+    {
+        $endTime = time();
+        $startTime = strtotime('-3 month');
+        if ($endDate != '') {
+            $endTime = strtotime($endDate);
+        }
+        if ($startDate != '') {
+            $startTime = strtotime($startDate);
         }
 
+        return date('Y-m-d H:i:s', rand($startTime, $endTime));
     }
 
     //https://220.m.molibx.com/api/sign_login
@@ -394,6 +443,13 @@ class Moke
         $sortMap = [];
         $searchMode = '&&';
         $searchMap = [];
+
+        //时间范围
+        $endTime = time();
+        $startTime = strtotime('-3 month');
+
+        $startDate = date('Y-m-d H:i:s', $startTime);
+        $endDate = date('Y-m-d H:i:s', $endTime);
 
         /*        $defaultConfig = [
                     'map' => [],
@@ -418,7 +474,7 @@ class Moke
         $dataNum = $maxPage * $pageSize;
 
         //生成数据
-        $datas = self::initData($apiName, $map, $dataNum, $isCache);
+        $datas = self::initData($apiName, $map, $dataNum, $isCache, $startDate, $endDate);
 
         /*        $searchMode = '&&';
 
@@ -454,7 +510,10 @@ class Moke
 
         //处理排序
         if ($sortMap) {
+            //print_r($sortMap);
             $datas = self::arrOrderByManyFieldMap($datas, $sortMap);
+
+            //print_r($datas);
         }
 
 
