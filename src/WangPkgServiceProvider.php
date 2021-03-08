@@ -20,7 +20,7 @@ class WangPkgServiceProvider extends ServiceProvider
         //发布视图目录
         $this->publishes([
             __DIR__.'/Resources/views' => resource_path('views/vendor/wangpkg'),
-        ]);
+        ],'views');
 
         //发布配置文件
         $this->publishes([
@@ -35,7 +35,7 @@ class WangPkgServiceProvider extends ServiceProvider
         //发布静态资源
         $this->publishes([
             __DIR__.'/Database/tab_struct' => base_path('tab_struct/preset'),
-        ], 'public');
+        ], 'tab_struct');
 
         //发布注册命令
         if ($this->app->runningInConsole()) {
