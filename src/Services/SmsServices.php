@@ -17,6 +17,30 @@ use Wang\Pkg\Lib\Request;
 //composer require "alibabacloud/sdk"
 class SmsServices
 {
+
+    //Wang\Pkg\Services\SmsServices::check(13917645030,888888);
+    public static function check($phone,$code){
+        $obj = Codelist::where("phone",$phone)->orderBy('updated_at', 'desc')->first();
+        if (!$obj || $code != $obj->code) {
+            Response::halt([],201,"验证码错误");
+        }
+
+        $codetime = strtotime($obj->updated_at);
+        $time = time();
+
+        $cday = $codetime + 120;
+        if ($cday < $time) {
+            $whitelist = config('app.white_list',[]);
+            if (!in_array($phone, $whitelist)) {
+                if(!in_array(env('APP_ENV',''),['dev','local'])){
+                    Response::halt([],202,"验证码已过期");
+                }
+            }
+        }
+
+        return true;
+    }
+
     public static function sendMsg($phone, $scene)
     {
         return self::send($phone, $scene, "");
