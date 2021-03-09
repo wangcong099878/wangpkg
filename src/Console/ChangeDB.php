@@ -10,7 +10,7 @@ use Wang\Pkg\Lib\ChangeTable;
 use Wang\Pkg\Lib\BatchAddModel;
 use Wang\Pkg\Lib\Shell;
 
-class ChangeTab extends Command
+class ChangeDB extends Command
 {
     /**
      * The name and signature of the console command.

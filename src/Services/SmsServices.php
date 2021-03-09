@@ -64,10 +64,12 @@ class SmsServices
 
         $TemplateCode = env("TEMPLATE_CODE");
 
+        $regionId = env('REGION_ID','cn-hangzhou');
+
         // Download：https://github.com/aliyun/openapi-sdk-php
         // Usage：https://github.com/aliyun/openapi-sdk-php/blob/master/README.md
         AlibabaCloud::accessKeyClient(env('ALiYUN_ACCESS_KEY_ID'), env('ACCESS_KEY_SECRET'))
-            ->regionId('cn-hangzhou')
+            ->regionId($regionId)
             ->asDefaultClient();
         try {
             $result = AlibabaCloud::rpc()
@@ -78,7 +80,7 @@ class SmsServices
                 ->method('POST')
                 ->options([
                     'query' => [
-                        'RegionId' => "cn-hangzhou",
+                        'RegionId' => $regionId,
                         'PhoneNumbers' => $phone,
                         'SignName' => $tag,
                         //'TemplateCode' => "SMS_157449276",

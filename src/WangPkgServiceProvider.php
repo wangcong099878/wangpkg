@@ -43,8 +43,8 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\wangpkg::class,
                 Console\MakeCommand::class,
                 Console\MakeTab::class,
-                Console\ChangeTab::class,
-                Console\GenerateMigration::class,
+                Console\ChangeDB::class,
+                Console\TabToTxt::class,
                 //BarCommand::class,
             ]);
         }
