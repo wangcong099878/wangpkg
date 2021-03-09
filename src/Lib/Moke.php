@@ -10,18 +10,46 @@ namespace Wang\Pkg\Lib;
 
 use Faker\Factory;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 //composer require fzaninotto/faker
 class Moke
 {
-    //根据关联id生成数据
-    //生成并填充到数据库表
-    public static function addModel($model, $map)
+
+    //Wang\Pkg\Lib\Moke::test1();
+    public static function test1()
     {
-        //批量生成数据
-        //$datas = init($map);
-        //分批插入数据
-        //$model::insert();
+
+        //$model = \App\Models\ImportDetail::class;
+        $model = 'import_detail';
+
+        $data = self::addModel($model, [
+            'md5' => function () {
+                return md5(rand(0, 100));
+            },
+            'phone' => 'phoneNumber',
+            'media_account_id' => [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            'media_id' => [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        ], 10000);
+
+        //print_r($data);
+        //echo 123456;
+    }
+
+    //根据关联id生成数据 addModel(\App\User::class,$map);
+    //生成并填充到数据库表
+    public static function addModel($model, $map, $dataNum = 10000)
+    {
+        $isCache = false;
+        $map = array_merge($map, ['created_at', 'updated_at']);
+        $datas = self::initData('default', $map, $dataNum, $isCache);
+
+        if(is_string($model)){
+            DB::table($model)->insert($datas);
+        }else{
+            $model::insert($datas);
+        }
+        return "ok";
     }
 
     //传入数组排序  传入map
@@ -368,27 +396,25 @@ class Moke
                             } catch (\Exception $e) {
                                 $data[$k] = '';
                             }
-                        } else {
-                            //判断是否是字符串
-                            try {
-                                $data[$k] = $faker->{$v};
-                            } catch (\Exception $e) {
-                                if (is_string($v)) {
-                                    $data[$k] = $v;
-                                } else {
-                                    $data[$k] = '';
-                                }
+                        }
 
+                        //判断是否是字符串
+                        if (is_string($v)) {
+                            try {
+                                @$data[$k] = $faker->{$v};
+                            } catch (\Exception $e) {
+                                $data[$k] = $v;
                             }
                         }
+
                         //判断数组
-                        try {
-                            if (is_array($v)) {
+                        if (is_array($v)) {
+                            try {
                                 $num = rand(0, count($v) - 1);
                                 $data[$k] = $v[$num];
+                            } catch (\Exception $e) {
+                                $data[$k] = '';
                             }
-                        } catch (\Exception $e) {
-                            $data[$k] = '';
                         }
                     }
 
@@ -406,8 +432,7 @@ class Moke
             }
 
             return $datas;
-        } catch
-        (\Exception $e) {
+        } catch (\Exception $e) {
             //errLog('liantong', "登录错误", $e);
         }
 
