@@ -14,8 +14,15 @@ use Illuminate\Support\Facades\Cache;
 //composer require fzaninotto/faker
 class Moke
 {
-
     //根据关联id生成数据
+    //生成并填充到数据库表
+    public static function addModel($model, $map)
+    {
+        //批量生成数据
+        //$datas = init($map);
+        //分批插入数据
+        //$model::insert();
+    }
 
     //传入数组排序  传入map
     public static function arrOrderByManyFieldMap($arr, $map)
@@ -354,7 +361,6 @@ class Moke
                             continue;
                         }
 
-
                         //判断是否是匿名函数
                         if (is_callable($v)) {
                             try {
@@ -367,13 +373,18 @@ class Moke
                             try {
                                 $data[$k] = $faker->{$v};
                             } catch (\Exception $e) {
-                                $data[$k] = '';
+                                if (is_string($v)) {
+                                    $data[$k] = $v;
+                                } else {
+                                    $data[$k] = '';
+                                }
+
                             }
                         }
                         //判断数组
                         try {
                             if (is_array($v)) {
-                                $num = rand(0, count($v)-1);
+                                $num = rand(0, count($v) - 1);
                                 $data[$k] = $v[$num];
                             }
                         } catch (\Exception $e) {
@@ -381,26 +392,24 @@ class Moke
                         }
                     }
 
-/*                        */
+                    /*                        */
 
-                        array_push($datas, $data);
-                    }
-
-                    if ($isCache) {
-                        Cache::store('file')->add($md5Name, $datas, 60 * 60 * 24);
-                    }
-
-                }
-            else {
-                    //echo "有缓存";
+                    array_push($datas, $data);
                 }
 
-                return $datas;
+                if ($isCache) {
+                    Cache::store('file')->add($md5Name, $datas, 60 * 60 * 24);
+                }
+
+            } else {
+                //echo "有缓存";
             }
-        catch
-            (\Exception $e) {
-                //errLog('liantong', "登录错误", $e);
-            }
+
+            return $datas;
+        } catch
+        (\Exception $e) {
+            //errLog('liantong', "登录错误", $e);
+        }
 
     }
 

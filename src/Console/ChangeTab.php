@@ -17,7 +17,7 @@ class ChangeTab extends Command
      *
      * @var string
      */
-    protected $signature = 'changetab {filepath?} {savepath?} {connect?}';
+    protected $signature = 'changedb {filepath?} {savepath?} {connect?}';
 
     /**
      * The console command description.
