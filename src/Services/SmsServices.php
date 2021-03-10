@@ -51,9 +51,8 @@ class SmsServices
     public static function send($phone, $scene = 1, $tag = "")
     {
         $code = mt_rand(100000, 999999);
-        //$code = 888888;
 
-        if (env('APP_ENV', '') == 'dev' || env('APP_ENV', '') == 'local') {
+        if (in_array(env('APP_ENV', ''),['dev','local'])) {
             $code = 888888;
         }
 
@@ -61,10 +60,11 @@ class SmsServices
 
         $count = Codelist::where('ip', $ip)->whereBetween('created_at', [date("Y-m-d H:i:s", strtotime("-12 hour")), date("Y-m-d H:i:s")])->count();
 
-        if ($count > 4) {
-            Response::halt([], 201, "获取次数超出限制");
+        if(!in_array(env('APP_ENV', ''),['dev','local'])){
+            if ($count > 4) {
+                Response::halt([], 201, "获取次数超出限制");
+            }
         }
-
 
         $verifyCode = new Codelist();
         $verifyCode->phone = $phone;
