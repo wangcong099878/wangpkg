@@ -17,32 +17,46 @@ class Base
 
     ];
 
-    protected function boot(){
+    protected function boot()
+    {
 
     }
 
-    protected function param($key,$rules="", array $messages = []){
-        return $this->make($key,$rules, $messages);
+    protected function param($key, $rules = "", array $messages = [])
+    {
+        return $this->make($key, $rules, $messages);
     }
 
-    protected function make($key,$rules="", array $messages = []){
+    protected function make($key, $rules = "", array $messages = [])
+    {
         $this->boot();
 
-        if($rules==""){
-            if(isset($this->rule[$key]['rules'])){
+
+        if ($rules == "") {
+            if (isset($this->rule[$key]['rules'])) {
                 $rules = $this->rule[$key]['rules'];
                 $messages = isset($this->rule[$key]['messages']) ? $this->rule[$key]['messages'] : [];
-            }else{
+            } else {
                 return isset($_REQUEST[$key]) ? $_REQUEST[$key] : "";
             }
         }
-        $validator = Validator::make($_REQUEST,[
+
+        if (is_array($messages) && count($messages) > 1) {
+            foreach ($messages as $k => $v) {
+                if (strpos($k, '.') !== false) {
+                    unset($messages[$k]);
+                    $messages[$key . '.' . $k] = $v;
+                }
+            }
+        }
+
+        $validator = Validator::make($_REQUEST, [
             $key => $rules,
-        ],$messages);
+        ], $messages);
 
         if ($validator->fails()) {
             $keys = $validator->errors()->keys();
-            Response::halt([],2002,$validator->errors()->first(),['param'=>$keys[0]]);
+            Response::halt([], 2002, $validator->errors()->first(), ['param' => $keys[0]]);
         }
 
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : "";
