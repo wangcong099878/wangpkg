@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\DB;
 use Wang\Pkg\Lib\ChangeTable;
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 use Wang\Pkg\Lib\Shell;
 
 class RunSHS extends Command
@@ -17,7 +17,7 @@ class RunSHS extends Command
      *
      * @var string
      */
-    protected $signature = 'run:shs {filepath?} {savepath?} {connect?}';
+    protected $signature = 'runshs {filepath?} {savepath?} {connect?}';
 
     /**
      * The console command description.
@@ -44,7 +44,7 @@ class RunSHS extends Command
     public function handle()
     {
 
-        $basepath = base_path('tab_struct');
+        $basepath = base_path('shs');
         //php artisan maketab '/Users/wangcong/php/pkgdev/tabStruct.tab' nginx
         $filepath = $this->argument('filepath') ? $this->argument('filepath') : 'database';
 

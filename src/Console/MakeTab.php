@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\DB;
 use Wang\Pkg\Lib\CreateTable;
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 
 
 class MakeTab extends Command

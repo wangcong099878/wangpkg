@@ -6,7 +6,7 @@ namespace Wang\Pkg\Console;
 use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\DB;
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 
 class Wangpkg extends Command
 {
@@ -53,7 +53,7 @@ class Wangpkg extends Command
     }
 
     public function createModel($tabName){
-        BatchAddModel::addModel($tabName, true, true);
+        ManageDB::addModel($tabName, true, true);
         print_r("create ok! \n");
     }
 

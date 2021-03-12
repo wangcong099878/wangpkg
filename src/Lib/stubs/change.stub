@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 
 class DummyClass extends Migration
 {
@@ -25,7 +25,7 @@ class DummyClass extends Migration
 
 
             //重新生成model
-            BatchAddModel::addModel('DummyTableName', true, true);
+            ManageDB::addModel('DummyTableName', true, true);
 
         });
     }

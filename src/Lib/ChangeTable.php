@@ -52,7 +52,7 @@ class ChangeTable
         //判断该表是否已经存在
         //
         $tabIsExist = false;
-        $tableNameList = BatchAddModel::getTables();
+        $tableNameList = ManageDB::getTables();
         $tableIndexList = [];
 
         $tabName = '';
@@ -76,6 +76,7 @@ class ChangeTable
             'char' => '',
             'float' => '0.00',
             'double' => '0.00',
+            'text'=>''
         ];
 
         $defaultLengthMap = [
@@ -87,7 +88,25 @@ class ChangeTable
             'char' => 255,
             'float' => '8-2',
             'double' => '10-2',
+            //'text'=>65535
         ];
+        $allowMap = [
+            'int',
+            'bigint',
+            'tinyint',
+            'decimal',
+            'varchar',
+            'char',
+            'float',
+            'double',
+            'text',
+            'longtext',
+            'timestamp',
+             'bigint:u',
+            'tinyint:u',
+            'int:u',
+            'decimal:u',
+            ];
 
         $indexMap = [];
         $stateMap = [];
@@ -125,7 +144,7 @@ class ChangeTable
 
                 if (in_array($tabName, $tableNameList)) {
                     $tabIsExist = true;
-                    $tableIndexList = BatchAddModel::getIndexInfo($tabName);
+                    $tableIndexList = ManageDB::getIndexInfo($tabName);
                 }
 
                 //本次执行判断
@@ -160,7 +179,7 @@ class ChangeTable
                     if (strpos($v, ',') !== false) {
 
                         $indexArr = explode(',', $index);
-                        $indexArrStr = BatchAddModel::arrToStr($indexArr, false);
+                        $indexArrStr = ManageDB::arrToStr($indexArr, false);
 
 
                         $deleteIndexStr = implode($indexArr, '_');
@@ -185,7 +204,7 @@ class ChangeTable
                 //关联索引  组合索引
                 if (strpos($v, ',') !== false) {
                     $indexArr = explode(',', $index);
-                    $indexArrStr = BatchAddModel::arrToStr($indexArr, false);
+                    $indexArrStr = ManageDB::arrToStr($indexArr, false);
                     $deleteIndexStr = implode($indexArr, '_');
                     $indexName = "{$tabName}_{$deleteIndexStr}_index";
 
@@ -230,7 +249,8 @@ class ChangeTable
             if (isset($fieldInfo[2])) {
                 $tabStructItem['type'] = $fieldInfo[2] ? $fieldInfo[2] : 'varchar';
 
-                if(!isset($defaultLengthMap[$fieldInfo[2]])){
+
+                if(!in_array($fieldInfo[2],$allowMap)){
                     $tabStructItem['type'] = 'varchar';
                 }
 
@@ -289,7 +309,7 @@ class ChangeTable
         $originalFieldList = [];
         if ($tabIsExist) {
             //查询原表字段是否存在
-            $originalFieldList = BatchAddModel::getFieldList($tabName);
+            $originalFieldList = ManageDB::getFieldList($tabName);
             //读取模板信息
             $content = $file->get(__DIR__ . '/stubs/change.stub');
         } else {
@@ -300,7 +320,7 @@ class ChangeTable
 
         //状态map  DummyStateMap
         if ($stateMap) {
-            $DummyStateMap = '$map = ' . BatchAddModel::arrToCode($stateMap) . ';';
+            $DummyStateMap = '$map = ' . ManageDB::arrToCode($stateMap) . ';';
             $content = str_replace('DummyStateMap', $DummyStateMap, $content);
         } else {
             $content = str_replace('DummyStateMap', '$map = [];', $content);
@@ -325,7 +345,7 @@ class ChangeTable
             if (in_array($v['field'], $originalFieldList)) {
                 $isChange = true;
 
-                $oldCode = self::AnalysisField(BatchAddModel::getFieldInfo($tabName, $v['field']), $isChange);
+                $oldCode = self::AnalysisField(ManageDB::getFieldInfo($tabName, $v['field']), $isChange);
                 $newCode = self::AnalysisField($v, $isChange);
 
                 if ($oldCode != $newCode) {
@@ -376,10 +396,10 @@ class ChangeTable
         //类名
         //$DummyClass
         if ($tabIsExist) {
-            $DummyClass = 'AddChangeTo' . ucfirst(BatchAddModel::camelize($tabName)) . $u . 'Table';
+            $DummyClass = 'AddChangeTo' . ucfirst(ManageDB::camelize($tabName)) . $u . 'Table';
             $content = str_replace('DummyClass', $DummyClass, $content);
         } else {
-            $DummyClass = 'Create' . ucfirst(BatchAddModel::camelize($tabName)) . $u . 'Table';
+            $DummyClass = 'Create' . ucfirst(ManageDB::camelize($tabName)) . $u . 'Table';
             $content = str_replace('DummyClass', $DummyClass, $content);
         }
 
@@ -421,15 +441,12 @@ class ChangeTable
         $tabStr .= "#" . $table->getName() . '=' . $table->getComment() . "\n";
 
         foreach ($table->getColumns() as $column) {
-            $fieldInfo = BatchAddModel::AnalysisField($column);
+            $fieldInfo = ManageDB::AnalysisField($column);
             if (in_array($fieldInfo['field'], ['id', 'created_at', 'updated_at'])) {
                 continue;
             }
 
-            $describe = str_replace(',','，',$fieldInfo['describe']);
-            $describe = str_replace("'",'"',$fieldInfo['describe']);
-
-            $tabStr .= "{$fieldInfo['field']},{$describe},{$fieldInfo['type']},{$fieldInfo['length']},{$fieldInfo['default']}\n";
+            $tabStr .= "{$fieldInfo['field']},{$fieldInfo['describe']},{$fieldInfo['type']},{$fieldInfo['length']},{$fieldInfo['default']}\n";
         }
 
         foreach ($table->getIndexes() as $index) {
@@ -471,7 +488,7 @@ class ChangeTable
                 //字段列表   DummyFields
                 $DummyFields = '';
 
-                $fieldInfos = BatchAddModel::getFields($tabName);
+                $fieldInfos = ManageDB::getFields($tabName);
 
 
                 //print_r($fieldInfos);
@@ -502,7 +519,7 @@ class ChangeTable
 
         //生成多张表的migration
 
-        #用 BatchAddModel  就可以实现大部分功能  不要重新生成Model
+        #用 ManageDB  就可以实现大部分功能  不要重新生成Model
     }
 
     public static function AnalysisField($v, $isChange)

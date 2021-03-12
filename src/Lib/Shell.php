@@ -42,7 +42,7 @@ class Shell
         return $result;
     }
 
-    //App\Lib\Shell::execJs();
+    //Wang\Pkg\Lib\Shell::execJs();
     public static function execJs($jsfile = "test.js", array $param = [])
     {
         /*        $config = new \stdClass;

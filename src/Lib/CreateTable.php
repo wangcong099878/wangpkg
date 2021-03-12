@@ -108,7 +108,7 @@ class CreateTable
                     $index = str_replace(':unique', '', $index);
                     if (strpos($v, ',') !== false) {
                         $indexArr = explode(',', $index);
-                        $indexArrStr = BatchAddModel::arrToStr($indexArr, false);
+                        $indexArrStr = ManageDB::arrToStr($indexArr, false);
                         $indexMap[] = "\$table->unique({$indexArrStr});";
                     } else {
                         $indexMap[] = "\$table->unique('{$index}');";
@@ -119,7 +119,7 @@ class CreateTable
                 //关联索引  组合索引
                 if (strpos($v, ',') !== false) {
                     $indexArr = explode(',', $index);
-                    $indexArrStr = BatchAddModel::arrToStr($indexArr, false);
+                    $indexArrStr = ManageDB::arrToStr($indexArr, false);
                     $indexMap[] = "\$table->index({$indexArrStr});";
                 } else {
                     $indexMap[] = "\$table->index('{$index}');";
@@ -209,12 +209,12 @@ class CreateTable
 
         //类名
         //$DummyClass
-        $DummyClass = 'Create' . ucfirst(BatchAddModel::camelize($tabName)) . 'Table';
+        $DummyClass = 'Create' . ucfirst(ManageDB::camelize($tabName)) . 'Table';
         $content = str_replace('DummyClass', $DummyClass, $content);
 
         //状态map  DummyStateMap
         if ($stateMap) {
-            $DummyStateMap = '$map = ' . BatchAddModel::arrToCode($stateMap) . ';';
+            $DummyStateMap = '$map = ' . ManageDB::arrToCode($stateMap) . ';';
             $content = str_replace('DummyStateMap', $DummyStateMap, $content);
         } else {
             $content = str_replace('DummyStateMap', '$map = [];', $content);

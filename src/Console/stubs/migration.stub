@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 
 class DummyClass extends Migration
 {
@@ -31,7 +31,7 @@ class DummyClass extends Migration
 
 
             #创建model
-            BatchAddModel::addModel($tableName, true, true, BatchAddModel::createAssocMapList($map));
+            ManageDB::addModel($tableName, true, true, ManageDB::createAssocMapList($map));
             \DB::statement("ALTER TABLE `$tableName` comment 'DummyTabDescribe' ");
         }
 

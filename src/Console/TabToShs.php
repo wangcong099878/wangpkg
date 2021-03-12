@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
  * Time: 5:56 下午
  */
 
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 use Wang\Pkg\Lib\ChangeTable;
 
 class TabToShs extends Command
@@ -95,7 +95,7 @@ class TabToShs extends Command
         #生成结构目录
         #/Users/wangcong/php/pkgdev/database/日期
         //读取所有表
-        $tablist = BatchAddModel::getTables();
+        $tablist = ManageDB::getTables();
 
         $tabStr = "";
         foreach ($tablist as $k => $tabName) {
@@ -124,18 +124,18 @@ class TabToShs extends Command
 
         $datetime = date('Y_m_d_His');
 
-        $savename = $datetime .$suffix. '.txt';
+        $savename = $datetime .$suffix. '.shs';
 
 
-        if (!file_exists(base_path('tab_struct'))) {
-            mkdir(base_path('tab_struct'));
+        if (!file_exists(base_path('shs'))) {
+            mkdir(base_path('shs'));
         }
 
-        $savepath = base_path('tab_struct/' . $savename);
+        $savepath = base_path('shs/' . $savename);
 
         file_put_contents($savepath, $tabStr, FILE_APPEND);
 
-        echo "php artisan changetab '{$savename}' $datetime \n";
+        echo "php artisan runshs '{$savename}' $datetime \n";
     }
 
 }

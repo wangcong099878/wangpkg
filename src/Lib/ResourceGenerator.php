@@ -3,7 +3,7 @@
 namespace Wang\Pkg\Lib;
 
 use Illuminate\Database\Eloquent\Model;
-use Wang\Pkg\Lib\BatchAddModel;
+use Wang\Pkg\Lib\ManageDB;
 
 class ResourceGenerator
 {
@@ -278,8 +278,8 @@ class ResourceGenerator
 
             //处理state
             if (strpos($comment, '?') !== false && strpos($comment, '=') !== false) {
-                $tabCamelize = ucfirst(BatchAddModel::camelize($this->model->getTable()));
-                $fieldCamelize = BatchAddModel::camelize($name);
+                $tabCamelize = ucfirst(ManageDB::camelize($this->model->getTable()));
+                $fieldCamelize = ManageDB::camelize($name);
                 $output .= "->using({$tabCamelize}::\${$fieldCamelize}Map);\r\n";
             } else {
                 $output .= ";\r\n";

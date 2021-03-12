@@ -8,36 +8,8 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Schema\Index;
 
-class BatchAddModel
+class ManageDB
 {
-    /*    public static $tables = [
-            'image',
-            'nick',
-            'avatar_log',
-            'nick_log',
-            'robot_log',
-            'configs',
-        ];*/
-
-    //App\Lib\BatchAddModel::run();
-    /*    public static function run()
-        {
-            foreach (self::$tables as $tabName) {
-                self::addModel($tabName);
-            }
-        }*/
-
-    //
-
-    /*    App\Lib\BatchAddModel::addModels([
-                'image',
-                'nick',
-                'avatar_log',
-                'nick_log',
-                'robot_log',
-                'configs',
-            ]);
-    */
     public static function addModels($arr)
     {
         foreach ($arr as $tabName) {
@@ -50,7 +22,7 @@ class BatchAddModel
         return '[' . trim(trim(var_export($mapArr, true), 'array ('), ')') . ']';
     }
 
-    //App\Lib\BatchAddModel::test();
+    //Wang\Pkg\Lib\ManageDB::test();
     public static function test()
     {
         $map = [
@@ -69,7 +41,7 @@ class BatchAddModel
     }
 
 
-    //App\Lib\BatchAddModel::createAssocMap('user_info',[1,2,3]);
+    //Wang\Pkg\Lib\ManageDB::createAssocMap('user_info',[1,2,3]);
     public static function createAssocMap($field, $mapArr)
     {
 
@@ -93,7 +65,7 @@ ABC;
         return $resultStr;
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::arrToStr([1,2,3]);
+    //Wang\Pkg\Lib\ManageDB::arrToStr([1,2,3]);
     public static function arrToStr($array, $assoc = true)
     {
         if ($assoc) {
@@ -149,7 +121,7 @@ ABC;
         }
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::addFillable('users');
+    //Wang\Pkg\Lib\ManageDB::addFillable('users');
     public static function addFillable($tabName)
     {
         $list = \Illuminate\Support\Facades\Schema::getColumnListing($tabName);
@@ -163,7 +135,7 @@ ABC;
         return self::arrToStr(array_values($list), false);
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::getTables();
+    //Wang\Pkg\Lib\ManageDB::getTables();
     public static function getTables()
     {
         //
@@ -173,7 +145,7 @@ ABC;
     }
 
     //查询表的索引信息
-    //Wang\Pkg\Lib\BatchAddModel::getIndexInfo('notice');
+    //Wang\Pkg\Lib\ManageDB::getIndexInfo('notice');
     public static function getIndexInfo($tabName)
     {
         $indexes = \DB::getDoctrineSchemaManager()->listTableIndexes($tabName);
@@ -185,7 +157,7 @@ ABC;
         return $indexList;
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::getFields();
+    //Wang\Pkg\Lib\ManageDB::getFields();
     public static function getFields($tabName)
     {
 
@@ -199,7 +171,7 @@ ABC;
         return $fieldInfos;
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::getFieldInfo('notice_two','a');
+    //Wang\Pkg\Lib\ManageDB::getFieldInfo('notice_two','a');
     public static function getFieldInfo($tabName, $field)
     {
 
@@ -293,7 +265,13 @@ ABC;
         }
 
         $fieldInfo['field'] = $column->getName();
-        $fieldInfo['describe'] = $column->getComment();
+        $describe = $column->getComment();
+
+        $describe = str_replace(',','，',$describe);
+        $describe = str_replace("'",'‘',$describe);
+        $describe = str_replace('"','‘',$describe);
+        $describe = str_replace('-','',$describe);
+        $fieldInfo['describe'] = $describe;
         if (in_array($type, ['decimal', 'double'])) {
             $fieldInfo['length'] = $columnInfoArr['precision'] . '-' . $columnInfoArr['scale'];
         } else {
@@ -308,6 +286,9 @@ ABC;
         //$fieldInfo['length'] = $column->getLength() ? $column->getLength() : $defaultLengthMap[$type];
         $fieldInfo['default'] = $column->getDefault() ? $column->getDefault() : $defaultMap[$type];
 
+
+
+
         if ($column->getUnsigned() == 1) {
             $type = $type . ':u';
         }
@@ -317,7 +298,7 @@ ABC;
         return $fieldInfo;
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::getFieldList('notice');
+    //Wang\Pkg\Lib\ManageDB::getFieldList('notice');
     public static function getFieldList($tabName)
     {
         $fieldList = [];
@@ -329,7 +310,7 @@ ABC;
         return $fieldList;
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::getStateMap('notice');
+    //Wang\Pkg\Lib\ManageDB::getStateMap('notice');
     public static function getStateMap($tabName)
     {
         $stateMap = [];
@@ -352,7 +333,7 @@ ABC;
         return $stateMap;
     }
 
-    //Wang\Pkg\Lib\BatchAddModel::addModel('game_orders');
+    //Wang\Pkg\Lib\ManageDB::addModel('game_orders');
     public static function addModel($tabName, $addFillable = true, $cover = false, $expand = '', $connectName = 'mysql')
     {
 
@@ -373,7 +354,7 @@ ABC;
         }
 
         if (!$expand) {
-            $expand = BatchAddModel::createAssocMapList(self::getStateMap($tabName));
+            $expand = ManageDB::createAssocMapList(self::getStateMap($tabName));
         }
 
 
@@ -419,7 +400,7 @@ ABC;
     /**
      * 下划线转驼峰
      */
-    //ucfirst(Wang\Pkg\Lib\BatchAddModel::camelize('add_log'));
+    //ucfirst(Wang\Pkg\Lib\ManageDB::camelize('add_log'));
     public static function camelize($uncamelized_words, $separator = '_')
     {
         $uncamelized_words = $separator . str_replace($separator, " ", strtolower($uncamelized_words));
