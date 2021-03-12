@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Filesystem\Filesystem;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAl\Schema\Table;
+use Illuminate\Support\Facades\Artisan;
+
 
 class ChangeTable
 {
@@ -41,7 +43,30 @@ class ChangeTable
 
         #记录到操作记录中
         $log_path = 'migrate.log';
-        file_put_contents(base_path($log_path), $showCommand, FILE_APPEND);
+
+        $wangpkgPath = storage_path('logs/wangpkg');
+
+        if (!file_exists($wangpkgPath)) {
+            mkdir($wangpkgPath);
+        }
+
+
+        $showCommandLog = date('Y-m-d H:i:s')." ".$showCommand;
+        file_put_contents($wangpkgPath.'/'.$log_path, $showCommandLog, FILE_APPEND);
+
+        $migratePath = 'database/' . $saveBasePath;
+/*        $exitCode = Artisan::call('migrate', [
+             '--path' => $migratePath
+        ]);*/
+
+        $result = \Wang\Pkg\Lib\Shell::execArtisan('migrate','--path='.$migratePath.' '.'--pretend');
+
+        if($result){
+            //前缀
+            file_put_contents($wangpkgPath.'/sql.log', "\n".$showCommandLog.$result."\n", FILE_APPEND);
+        }
+        echo "\n";
+
 
         echo $showCommand." \n";
 
