@@ -6,7 +6,7 @@ namespace Wang\Pkg\Console;
 use Illuminate\Console\Command;
 
 use Illuminate\Support\Facades\DB;
-
+use Wang\Pkg\Lib\BatchAddModel;
 
 class wangpkg extends Command
 {
@@ -50,6 +50,11 @@ class wangpkg extends Command
 
         $param = $this->argument('param');
         call_user_func([$this, $action], $param);
+    }
+
+    public function createModel($tabName){
+        BatchAddModel::addModel($tabName, true, true);
+        print_r("create ok! \n");
     }
 
     //php artisan wangpkg taskCount
