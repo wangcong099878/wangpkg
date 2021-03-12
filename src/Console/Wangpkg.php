@@ -49,12 +49,37 @@ class Wangpkg extends Command
         }
 
         $param = $this->argument('param');
-        call_user_func([$this, $action], $param);
+        try {
+            if (method_exists($this, $action)) {
+                call_user_func([$this, $action], $param);
+            } else {
+                switch ($action) {
+                    case 'cm':
+                        $this->createModel($param);
+                        break;
+
+                    default:
+                        $this->defaultRun($param);
+
+                }
+            }
+
+        } catch (\Exception $e) {
+
+        }
+
     }
 
-    public function createModel($tabName){
+    public function createModel($tabName)
+    {
         ManageDB::addModel($tabName, true, true);
         print_r("create ok! \n");
+    }
+
+
+    public function defaultRun()
+    {
+        echo "未找到执行方法";
     }
 
     //php artisan wangpkg taskCount
@@ -62,5 +87,6 @@ class Wangpkg extends Command
     {
         echo 12345678;
     }
+
 
 }

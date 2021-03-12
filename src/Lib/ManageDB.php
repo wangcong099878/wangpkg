@@ -180,7 +180,6 @@ ABC;
     //Wang\Pkg\Lib\ManageDB::getFields();
     public static function getFields($tabName)
     {
-
         $fieldInfos = [];
         $columns = \DB::getDoctrineSchemaManager()->listTableColumns($tabName);
         foreach ($columns as $column) {
