@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Wang\Pkg\Lib\BatchAddModel;
 
-class wangpkg extends Command
+class Wangpkg extends Command
 {
     /**
      * The name and signature of the console command.

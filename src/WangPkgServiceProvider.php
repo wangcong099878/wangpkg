@@ -40,11 +40,11 @@ class WangPkgServiceProvider extends ServiceProvider
         //发布注册命令
         if ($this->app->runningInConsole()) {
             $this->commands([
-                Console\wangpkg::class,
+                Console\Wangpkg::class,
                 Console\MakeCommand::class,
                 Console\MakeTab::class,
-                Console\ChangeDB::class,
-                Console\TabToTxt::class,
+                Console\RunSHS::class,
+                Console\TabToShs::class,
                 //BarCommand::class,
             ]);
         }

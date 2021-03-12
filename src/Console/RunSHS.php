@@ -10,14 +10,14 @@ use Wang\Pkg\Lib\ChangeTable;
 use Wang\Pkg\Lib\BatchAddModel;
 use Wang\Pkg\Lib\Shell;
 
-class ChangeDB extends Command
+class RunSHS extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'changedb {filepath?} {savepath?} {connect?}';
+    protected $signature = 'run:shs {filepath?} {savepath?} {connect?}';
 
     /**
      * The console command description.

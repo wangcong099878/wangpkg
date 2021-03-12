@@ -42,35 +42,6 @@ class Ulid
         $this->randomness = $randomness;
     }
 
-    public static function test(){
-        $str = "/4729.html";
-        //$str = $_SERVER['REQUEST_URI'];
-        $pattern = '/^\/(\d+)\.html/';
-        if(preg_match_all($pattern, $str, $match)){
-            if(isset($match[1][0]) && is_numeric($match[1][0])){
-                if($match[1][0]<4730){
-                    //发出301头部
-                    header('HTTP/1.1 301 Moved Permanently');
-                    //跳转到你希望的地址格式
-                    header('Location: http://www.epbaba.com/uncategorized/'.$match[1][0].'.html');
-                    exit;
-                }
-            }
-        }
-    }
-
-    public static function txt(){
-        $str = "";
-        for($i=40;$i<5875;$i++){
-            $str.='http://www.epbaba.com/'.$i.'.html http://www.epbaba.com/uncategorized/'.$i.'.html'."\n";
-        }
-
-        //echo $str;
-        file_put_contents(ROOT_PATH.'/url.txt',$str);
-
-    }
-
-
     /**
      * @return Ulid
      */

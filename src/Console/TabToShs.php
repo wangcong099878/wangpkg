@@ -15,14 +15,14 @@ use Illuminate\Console\Command;
 use Wang\Pkg\Lib\BatchAddModel;
 use Wang\Pkg\Lib\ChangeTable;
 
-class TabToTxt extends Command
+class TabToShs extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tabtotxt {filepath?} {savepath?} {--exclude=} {--choice=}';
+    protected $signature = 'tabtoshs {filepath?} {savepath?} {--exclude=} {--choice=}';
 
     /**
      * The console command description.
