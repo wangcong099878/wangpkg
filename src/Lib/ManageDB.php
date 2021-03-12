@@ -136,11 +136,9 @@ ABC;
     }
 
     //Wang\Pkg\Lib\ManageDB::getTables();
-    public static function getTables()
+    public static function getTables($connect='mysql')
     {
-        //
-
-        $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
+        $tables = DB::connection($connect)->getDoctrineSchemaManager()->listTableNames();
         return $tables;
     }
 
@@ -152,7 +150,29 @@ ABC;
         $indexList = [];
         foreach ($indexes as $index) {
             //echo $index->getName() . ': ' . ($index->isUnique() ? 'unique' : 'not unique') . "\n";
-            $indexList[] = $index->getName();
+            //$indexList[] = $index->getName();
+
+            //此处必须组装正确的名字
+            if ($index->isPrimary()) {
+                continue;
+            }
+
+            $unique = '';
+            if ($index->isUnique()) {
+                $unique = '_unique';
+            }else{
+                $unique = '_index';
+            }
+            $columns = $index->getColumns();
+
+            if (count($columns) > 1) {
+                $indexList[] = $tabName .'_'. implode('_',$columns) . $unique;
+            }else{
+                $indexList[] = $tabName.'_'. $columns[0] . $unique;
+            }
+
+
+
         }
         return $indexList;
     }

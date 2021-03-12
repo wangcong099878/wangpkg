@@ -17,7 +17,7 @@ class RunSHS extends Command
      *
      * @var string
      */
-    protected $signature = 'runshs {filepath?} {savepath?} {connect?}';
+    protected $signature = 'runshs {filepath?} {savepath?} {connect?} {--connect=}';
 
     /**
      * The console command description.
@@ -58,7 +58,7 @@ class RunSHS extends Command
 
         $connect = $this->argument('connect') ? $this->argument('connect') : 'mysql';
 
-        ChangeTable::run($path,$saveBasePath);
+        ChangeTable::run($path,$saveBasePath,$connect);
 
         //执行
         //print_r(Shell::execArtisan('migrate','--path='.$saveBasePath));
