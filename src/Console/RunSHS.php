@@ -53,7 +53,7 @@ class RunSHS extends Command
         //判断文件是否存在  如果不存在   补全后缀
         if(!file_exists($path)) {
             $path = $path.'.shs';
-            //再次判断
+            //再次判断 //is_dir
             if(!file_exists($path)) {
                 echo "shs文件不存在! \n";
                 return "";
