@@ -50,6 +50,16 @@ class RunSHS extends Command
 
         $path = $basepath.'/'.$filepath;
 
+        //判断文件是否存在  如果不存在   补全后缀
+        if(!file_exists($path)) {
+            $path = $path.'.shs';
+            //再次判断
+            if(!file_exists($path)) {
+                echo "shs文件不存在! \n";
+                return "";
+            }
+        }
+
         $saveBasePath = $this->argument('savepath') ? $this->argument('savepath') : 'migrations';
 
         if($saveBasePath == 'date'){
