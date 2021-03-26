@@ -31,20 +31,20 @@ class Swoole
             print_r($q);
             //https://wiki.swoole.com/#/coroutine_client/http_client
             //用这个   https://github.com/swlib/saber
-/*            $url = 'https://105.m.molibx.com/api/task/list';
-            $urlinfo = parse_url($url);
+            /*            $url = 'https://105.m.molibx.com/api/task/list';
+                        $urlinfo = parse_url($url);
 
-            $port = 80;
-            $https = false;
-            if (isset($urlinfo['scheme']) && $urlinfo['scheme'] == 'https') {
-                $port = 443;
-                $https = true;
-            }
+                        $port = 80;
+                        $https = false;
+                        if (isset($urlinfo['scheme']) && $urlinfo['scheme'] == 'https') {
+                            $port = 443;
+                            $https = true;
+                        }
 
-            $client = new \Swoole\Coroutine\Http\Client($urlinfo['host'], $port, $https);
-            $client->post($urlinfo['path'], array('a' => '123', 'b' => '456'));
-            var_dump($client->body);
-            $client->close();*/
+                        $client = new \Swoole\Coroutine\Http\Client($urlinfo['host'], $port, $https);
+                        $client->post($urlinfo['path'], array('a' => '123', 'b' => '456'));
+                        var_dump($client->body);
+                        $client->close();*/
         } catch (\Exception $e) {
             return 'Exception' . $e->getLine() . ':' . $e->getMessage();
         } catch (Error $e) {
@@ -59,10 +59,15 @@ class Swoole
     }
 
 
-    public static function test($q){
+    public static function test($q)
+    {
         Runtime::enableCoroutine();
         \Co\run(function () use ($q) {
-            self::run($q);
+
+            go(function () use ($q) {
+                self::run($q);
+            });
+
         });
     }
 }
