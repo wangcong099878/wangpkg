@@ -201,9 +201,10 @@ class Wangpkg extends Command
                         $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
                         //echo $stmt->rowCount();
 
-                        $stmt = $pdo->prepare("INSERT INTO `queue_error` (`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:ulid, :error_reason,:created_at,:updated_at)");
+                        $stmt = $pdo->prepare("INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)");
                         $date = date('Y-m-d H:i:s');
                         $stmt->execute([
+                            ':taskname' => $queue['taskname'],
                             ':ulid' => $queue['ulid'],
                             ':error_reason' => $result,
                             ':created_at' => $date,
