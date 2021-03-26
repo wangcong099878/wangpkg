@@ -14,14 +14,14 @@ use Wang\Pkg\Lib\Shell;
 use Wang\Pkg\Services\QueueServices;
 
 
-class Wangpkg extends Command
+class NormalQueue extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'wangpkg {action?} {param?} {param1?}';
+    protected $signature = 'wangpkg:queue {action?} {param?} {param1?}';
 
     /**
      * The console command description.
@@ -77,12 +77,6 @@ class Wangpkg extends Command
 
     }
 
-    public function createModel($tabName)
-    {
-        ManageDB::addModel($tabName, true, true);
-        print_r("create ok! \n");
-    }
-
     //
     public function getRd()
     {
@@ -105,15 +99,8 @@ class Wangpkg extends Command
     //转移成功数据到历史表 php artisan wangpkg transferSuccess
     public function transferSuccess()
     {
-        echo 123456;
         $Queues = Queue::where('state', 7)->get();
-
-        //print_r($Queues);
-
         foreach ($Queues as $queue) {
-
-            //print_r($queue->toArray());
-
             $data = $queue->toArray();
             unset($data['id']);
             var_dump(QueueHistory::insert($data));
@@ -122,14 +109,8 @@ class Wangpkg extends Command
 
     }
 
-    public function test()
-    {
-        App\Models\Queue::create(['taskname' => 'test']);
-    }
-
-    //普通队列版本   协程队列版本
-    //php artisan wangpkg queueMaster
-    public function queueMaster()
+    //php artisan wangpkg:queue master
+    public function master()
     {
         //防止redis过期
         $rd = $this->getRd();
@@ -158,12 +139,11 @@ class Wangpkg extends Command
         }
     }
 
-    //php artisan wangpkg queueSlave
-    public function queueSlave($taskName)
+    //php artisan wangpkg:queue slave
+    public function slave($taskName)
     {
         if (!$taskName) {
-            echo "请传入队列名称";
-            exit;
+            $taskName = 'normal';
         }
 
         //防止redis过期
@@ -175,11 +155,14 @@ class Wangpkg extends Command
                 try {
                     $queue = json_decode($queueJson, true);
                     $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($queue['taskname']));
-                    $filePath = app_path('Action/' . $taskName . '.php');
+                    $filePath = app_path('QueueAction/' . $taskName . '.php');
                     if (is_file($filePath)) {
                         //判断执行方法是否存在
                         if (method_exists("\App\QueueAction\\$taskName", "run")) {
                             $actionName = "\App\QueueAction\\$taskName::run";
+
+                            //$queue['content'] = json_decode($queue['content'],true);
+
                             $result = @$actionName($queue);
                         } else {
                             $result = "执行方法run不存在:" . $filePath;
@@ -237,68 +220,19 @@ class Wangpkg extends Command
                 usleep(50000);
             }
         }
-
-        //观察者处理事件
-        //读取redis队列  反射执行自定义run方法  传入$queue的Model对象
-        //在run方法执行完成后修改队列的状态   做好异常处理
     }
 
-    //不管该任务是什么状态都执行
-    //php artisan wangpkg execute 123
-    public function executeShell($queueId)
-    {
-        if ($queueId) {
-            $queue = Queue::where('id', $queueId)->first();
-            $taskName = ucfirst($queue->taskname);
-            $actionName = "\App\QueueAction\\$taskName::run";
 
-            //不然可能整个脚本崩溃
-            //抛出错误 提示没有run方法  这里最好用xShell执行  只传id进去  继承Action对象   在Action对象中把QueueModel查询出来
-            //method_exists("\App\QueueAction\\$taskName::class","run");
 
-            //判断文件是否存在
-            $filePath = app_path('Action/' . $taskName . '.php');
-
-            if (is_file($filePath)) {
-                $queue->state = 3;
-                $queue->save();
-                $result = $actionName($queue);
-
-                var_dump($result);
-
-                if ($result == true) {
-
-                    $queue->state = 4;
-                    $queue->save();
-                } else {
-                    //执行发生错误
-                    $queue->state = 5;
-                    $queue->save();
-                }
-            } else {
-                //执行脚本异常
-                $queue->state = 7;
-                $queue->save();
-                var_dump('为发现该执行方法');
-            }
-
+    public function test(){
+        while (true) {
+            QueueServices::add(['taskname'=>'test']);
         }
     }
-
 
     public function defaultRun()
     {
         echo "未找到执行方法";
-
-        while (true) {
-            QueueServices::add('test', []);
-        }
-    }
-
-    //php artisan wangpkg taskCount
-    public function taskCount()
-    {
-        echo 12345678;
     }
 
 

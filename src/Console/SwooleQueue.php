@@ -19,14 +19,14 @@ use Swoole\Database\RedisPool;
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
 
-class WangPkgQueue extends Command
+class SwooleQueue extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'wangpkg:queue {action?} {param?} {param1?} {param2?}';
+    protected $signature = 'wangpkg:swoole_queue {action?} {param?} {param1?} {param2?}';
 
     /**
      * The console command description.
@@ -80,45 +80,6 @@ class WangPkgQueue extends Command
 
     }
 
-    //
-    public function getRd()
-    {
-        $_config = array(
-            'hostname' => env('REDIS_HOST'),
-            'port' => env('REDIS_PORT'),
-            'password' => env('REDIS_PASSWORD'),
-        );
-
-        $rd = new \Redis();
-
-        $rd->connect($_config['hostname'], $_config['port']);
-        $rd->auth($_config['password']);
-        $rd->select(0);
-        //防止超时 https://blog.csdn.net/qmhball/article/details/52575133  分析超时  strace php sub.php
-        $rd->setOption(\Redis::OPT_READ_TIMEOUT, -1);
-
-        return $rd;
-    }
-
-    //转移成功数据到历史表 php artisan wangpkg transferSuccess
-    public function transferSuccess()
-    {
-        echo 123456;
-        $Queues = Queue::where('state', 7)->get();
-        //print_r($Queues);
-        foreach ($Queues as $queue) {
-
-            //print_r($queue->toArray());
-
-            $data = $queue->toArray();
-            unset($data['id']);
-            var_dump(QueueHistory::insert($data));
-            var_dump($queue->delete());
-        }
-
-    }
-
-
     public function getConfig()
     {
         $config = [
@@ -140,13 +101,8 @@ class WangPkgQueue extends Command
         return $config;
     }
 
-    public function test()
-    {
-        App\Models\Queue::create(['taskname' => 'test']);
-    }
-
     //普通队列版本   协程队列版本
-    //php artisan wangpkg:queue xMaster
+    //php artisan wangpkg:swoole_queue xMaster
     public function xMaster()
     {
         Runtime::enableCoroutine();
@@ -183,7 +139,7 @@ class WangPkgQueue extends Command
             while (true) {
                 $pdo = $pdoPool->get();
                 $rd = $redisPool->get();
-                $statement = $pdo->prepare("SELECT ulid,taskname,content FROM queue where state=? limit 100");
+                $statement = $pdo->prepare("SELECT id,ulid,taskname,content FROM queue where state=? limit 100");
                 $statement->execute([1]);
                 $queues = $statement->fetchAll(2);
 
@@ -191,6 +147,7 @@ class WangPkgQueue extends Command
                     $ulidList = [];
                     foreach ($queues as $queue) {
                         //写入redis
+                        $queue['content'] = json_decode($queue['content'],true);
                         $rd->rPush('queue_' . $queue['taskname'], json_encode($queue));
                         $ulidList[] = $queue['ulid'];
                     }
@@ -214,7 +171,7 @@ class WangPkgQueue extends Command
     }
 
     //队列名称 $taskname
-    //php artisan wangpkg:queue xSlave test  全协程操作
+    //php artisan wangpkg:swoole_queue xSlave test  全协程操作
     public function xSlave($taskname, $slaveWorkerNum = 10)
     {
         Runtime::enableCoroutine();
@@ -225,6 +182,10 @@ class WangPkgQueue extends Command
 
         if (!$slaveWorkerNum) {
             $slaveWorkerNum = 10;
+        }
+
+        if(!$taskname){
+            $taskname = 'swoole';
         }
 
         \Co\run(function () use ($config, $taskname, $slaveWorkerNum) {
@@ -271,21 +232,20 @@ class WangPkgQueue extends Command
                     go(function () use ($slaveWorker, $queueJson, $pdoPool, $config) {
                         $pdo = $pdoPool->get();
 
-
                         try {
                             $queue = json_decode($queueJson, true);
 
-                            //$result = xShell::execPHP('wangpkg:queue executeShell', $queue);
-                            $result = "";
                             $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($queue['taskname']));
-                            //$taskName = ucfirst($queue['taskname']);
 
-                            $filePath = app_path('Action/' . $taskName . '.php');
+                            $filePath = app_path('QueueAction/' . $taskName . '.php');
 
                             if (is_file($filePath)) {
                                 //判断执行方法是否存在
-                                if (method_exists("\App\Action\\$taskName", "run")) {
-                                    $actionName = "\App\Action\\$taskName::run";
+                                if (method_exists("\App\QueueAction\\$taskName", "run")) {
+                                    $actionName = "\App\QueueAction\\$taskName::run";
+
+                                    //$queue['content'] = json_decode($queue['content'],true);
+
                                     $result = @$actionName($queue);
                                 } else {
                                     $result = "执行方法run不存在:" . $filePath;
@@ -341,7 +301,7 @@ class WangPkgQueue extends Command
 
                             $slaveWorker->pop();
                         } catch (Error $e) {
-                            echo $e->getMessage();
+                            echo $e->getLine().$e->getMessage();
                         } finally {
                             //finally是在捕获到任何类型的异常后都会运行的一段代码
                         }
@@ -490,11 +450,11 @@ class WangPkgQueue extends Command
         if ($ulid) {
             $queue = Queue::where('ulid', $ulid)->first();
             $taskName = ucfirst($queue->taskname);
-            $actionName = "\App\Action\\$taskName::run";
+            $actionName = "\App\QueueAction\\$taskName::run";
 
             //不然可能整个脚本崩溃
             //抛出错误 提示没有run方法  这里最好用xShell执行  只传id进去  继承Action对象   在Action对象中把QueueModel查询出来
-            //method_exists("\App\Action\\$taskName::class","run");
+            //method_exists("\App\QueueAction\\$taskName::class","run");
 
             //判断文件是否存在
             $filePath = app_path('Action/' . $taskName . '.php');

@@ -41,10 +41,15 @@ class QueueServices
     }
 
     //media_id = $param1   phone = $param2
-    //Wang\Pkg\Services\QueueServices::add('test',['test'=>'test1']);
-    public static function add($taskName, $content = [], $param1 = '', $param2 = '')
+    //Wang\Pkg\Services\QueueServices::add(['test'=>'test1']);
+    //Wang\Pkg\Services\QueueServices::add(['taskname'=>'swoole']);
+    public static function add( $content = [], $param1 = '', $param2 = '',$taskName='normal')
     {
         $ulid = Ulid::generate();
+
+        if(isset($content['taskname']) && $content['taskname']!=''){
+            $taskName = $content['taskname'];
+        }
 
         $data = [
             'taskname' => $taskName,

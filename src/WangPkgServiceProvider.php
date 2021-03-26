@@ -36,6 +36,11 @@ class WangPkgServiceProvider extends ServiceProvider
             __DIR__.'/Database/shs' => base_path('shs/preset'),
         ], 'shs');
 
+        //队列资源
+        $this->publishes([
+            __DIR__.'/QueueAction' => app_path('QueueAction'),
+        ], 'shs');
+
         //发布注册命令
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -44,7 +49,8 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\MakeTab::class,
                 Console\RunSHS::class,
                 Console\TabToShs::class,
-                Console\WangPkgQueue::class,
+                Console\SwooleQueue::class,
+                Console\NormalQueue::class,
                 //BarCommand::class,
             ]);
         }
