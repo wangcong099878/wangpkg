@@ -11,6 +11,7 @@ namespace App\QueueAction;
 
 class Normal
 {
+    //单独调试 App\QueueAction\Normal::run(\App\Models\Queue::find(1)->toArray());
     public static function run($q)
     {
         try {

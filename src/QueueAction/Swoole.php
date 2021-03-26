@@ -21,7 +21,7 @@ class Swoole
     //如果使用协程版  一些特殊方法  这里也只能使用协程
     //post请求也只能使用 swoole中的
     //独立调试  如果用全协程   name这里不能用laravel中的model  只能使用swoole中的连接池操作数据库
-    //App\Action\Test::run(Queue::find(1)->toArray());
+    //单独调试 App\QueueAction\Swoole::test(\App\Models\Queue::find(1)->toArray());
     public static function run($q)
     {
 
@@ -56,5 +56,13 @@ class Swoole
 
         //执行成功返回"success"  错误则返回错误信息
         return "success";
+    }
+
+
+    public static function test($q){
+        Runtime::enableCoroutine();
+        \Co\run(function () use ($q) {
+            self::run($q);
+        });
     }
 }
