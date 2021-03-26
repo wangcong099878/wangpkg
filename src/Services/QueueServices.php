@@ -27,19 +27,6 @@ class QueueServices
 
     //暂停队列
 
-    public static function addErr($ulid, $err)
-    {
-        QueueError::create([
-            'ulid' => $ulid,
-            'error_reason' => $err
-        ]);
-    }
-
-    public static function getErrNum($ulid)
-    {
-        return Queue::where('ulid', $ulid)->count();
-    }
-
     //media_id = $param1   phone = $param2
     //Wang\Pkg\Services\QueueServices::add(['test'=>'test1']);
     //Wang\Pkg\Services\QueueServices::add(['taskname'=>'swoole']);
@@ -65,24 +52,6 @@ class QueueServices
 
         $queue = Queue::create($data);
         return $queue;
-
-        /*        $queue = new Queue();
-                $ulid = Ulid::generate();
-
-                $queue->taskname = $taskName;
-                $queue->ulid = $ulid;
-                $queue->day = date('Y-m-d');
-                $queue->state = 1;
-                $queue->error_reason = '';
-                $queue->error_num = 0;
-                $queue->param1 = $param1;
-                $queue->param2 = $param2;
-                $queue->content = $content;
-
-                $queue->save();
-
-
-                return $queue;*/
 
     }
 

@@ -83,49 +83,7 @@ class Wangpkg extends Command
         print_r("create ok! \n");
     }
 
-    //
-    public function getRd()
-    {
-        $_config = array(
-            'hostname' => env('REDIS_HOST'),
-            'port' => env('REDIS_PORT'),
-            'password' => env('REDIS_PASSWORD'),
-        );
-        $rd = new \Redis();
 
-        $rd->connect($_config['hostname'], $_config['port']);
-        $rd->auth($_config['password']);
-        $rd->select(0);
-        //防止超时 https://blog.csdn.net/qmhball/article/details/52575133  分析超时  strace php sub.php
-        $rd->setOption(\Redis::OPT_READ_TIMEOUT, -1);
-
-        return $rd;
-    }
-
-    //转移成功数据到历史表 php artisan wangpkg transferSuccess
-    public function transferSuccess()
-    {
-        echo 123456;
-        $Queues = Queue::where('state', 7)->get();
-
-        //print_r($Queues);
-
-        foreach ($Queues as $queue) {
-
-            //print_r($queue->toArray());
-
-            $data = $queue->toArray();
-            unset($data['id']);
-            var_dump(QueueHistory::insert($data));
-            var_dump($queue->delete());
-        }
-
-    }
-
-    public function test()
-    {
-        App\Models\Queue::create(['taskname' => 'test']);
-    }
 
     //普通队列版本   协程队列版本
     //php artisan wangpkg queueMaster
@@ -167,10 +125,11 @@ class Wangpkg extends Command
         }
 
         //防止redis过期
-        $rd = $this->getRd();
-        while (true) {
 
+        while (true) {
+            $rd = $this->getRd();
             $queueJson = $rd->lPop('queue_' . $taskName);
+            $rd->close();
             if ($queueJson) {
                 try {
                     $queue = json_decode($queueJson, true);
@@ -289,16 +248,6 @@ class Wangpkg extends Command
     public function defaultRun()
     {
         echo "未找到执行方法";
-
-        while (true) {
-            QueueServices::add('test', []);
-        }
-    }
-
-    //php artisan wangpkg taskCount
-    public function taskCount()
-    {
-        echo 12345678;
     }
 
 

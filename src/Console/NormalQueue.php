@@ -87,7 +87,8 @@ class NormalQueue extends Command
         );
         $rd = new \Redis();
 
-        $rd->connect($_config['hostname'], $_config['port']);
+        //$rd->connect($_config['hostname'], $_config['port']);
+        $rd->pconnect($_config['hostname'], $_config['port']);
         $rd->auth($_config['password']);
         $rd->select(0);
         //防止超时 https://blog.csdn.net/qmhball/article/details/52575133  分析超时  strace php sub.php
@@ -149,76 +150,80 @@ class NormalQueue extends Command
         //防止redis过期
         $rd = $this->getRd();
         while (true) {
-
-            $queueJson = $rd->lPop('queue_' . $taskName);
+            //出队不能使用 rPop，lPop，因为这两个方法是个长连接，一直连着Redis，redis报错如下：  那就使用 brPop，blPop
+            $queueJson = $rd->blPop('queue_' . $taskName,10);
             if ($queueJson) {
-                try {
-                    $queue = json_decode($queueJson, true);
-                    $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($queue['taskname']));
-                    $filePath = app_path('QueueAction/' . $taskName . '.php');
-                    if (is_file($filePath)) {
-                        //判断执行方法是否存在
-                        if (method_exists("\App\QueueAction\\$taskName", "run")) {
-                            $actionName = "\App\QueueAction\\$taskName::run";
+                $this->runQueue($queueJson);
+            }
+        }
+    }
 
-                            //$queue['content'] = json_decode($queue['content'],true);
+    //此处必须拎出来
+    public function runQueue($queueJson){
+        try {
+            $queue = json_decode($queueJson[1], true);
 
-                            $result = @$actionName($queue);
-                        } else {
-                            $result = "执行方法run不存在:" . $filePath;
-                        }
-                    } else {
-                        $result = "执行脚本不存在:" . $filePath;
-                    }
+            $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($queue['taskname']));
+            $filePath = app_path('QueueAction/' . $taskName . '.php');
+            if (is_file($filePath)) {
+                //判断执行方法是否存在
+                if (method_exists("\App\QueueAction\\$taskName", "run")) {
+                    $actionName = "\App\QueueAction\\$taskName::run";
 
-                    $pdo = DB::connection()->getPdo();
-                    //执行成功
-                    if ($result == "success") {
-                        $sql = "UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason WHERE `ulid`=:ulid";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->execute(array(':state' => 5, ':ulid' => $queue['ulid'], 'error_reason' => $result));
-                        //echo $stmt->rowCount();
+                    //$queue['content'] = json_decode($queue['content'],true);
 
-                    } else {
-                        $stmt = $pdo->prepare("UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason,`error_num`=error_num+1 WHERE `ulid`=:ulid");
-                        $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
-                        //echo $stmt->rowCount();
-
-                        $stmt = $pdo->prepare("INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)");
-                        $date = date('Y-m-d H:i:s');
-                        $stmt->execute([
-                            ':taskname' => $queue['taskname'],
-                            ':ulid' => $queue['ulid'],
-                            ':error_reason' => $result,
-                            ':created_at' => $date,
-                            ':updated_at' => $date,
-                        ]);
-
-                        //错误重试
-                        $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
-                        $stmt->execute([':ulid' => $queue['ulid']]);
-
-                        $datas = $stmt->fetchAll(2);
-                        if ($datas[0]['error_num'] < 5) {
-                            //延迟3秒重试
-                            usleep(50000);
-                            $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
-                            $stmt = $pdo->prepare($sql);
-                            $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
-                        }
-
-                    }
-
-                } catch (\Exception $e) {
-                    echo $e->getLine().$e->getMessage();
-                } catch (Error $e) {
-                    echo $e->getLine().$e->getMessage();
-                } finally {
-                    //finally是在捕获到任何类型的异常后都会运行的一段代码
+                    $result = @$actionName($queue);
+                } else {
+                    $result = "执行方法run不存在:" . $filePath;
                 }
             } else {
-                usleep(50000);
+                $result = "执行脚本不存在:" . $filePath;
             }
+
+            $pdo = DB::connection()->getPdo();
+            //执行成功
+            if ($result == "success") {
+                $sql = "UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason WHERE `ulid`=:ulid";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(array(':state' => 5, ':ulid' => $queue['ulid'], 'error_reason' => $result));
+                //echo $stmt->rowCount();
+
+            } else {
+                $stmt = $pdo->prepare("UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason,`error_num`=error_num+1 WHERE `ulid`=:ulid");
+                $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
+                //echo $stmt->rowCount();
+
+                $stmt = $pdo->prepare("INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)");
+                $date = date('Y-m-d H:i:s');
+                $stmt->execute([
+                    ':taskname' => $queue['taskname'],
+                    ':ulid' => $queue['ulid'],
+                    ':error_reason' => $result,
+                    ':created_at' => $date,
+                    ':updated_at' => $date,
+                ]);
+
+                //错误重试
+                $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
+                $stmt->execute([':ulid' => $queue['ulid']]);
+
+                $datas = $stmt->fetchAll(2);
+                if ($datas[0]['error_num'] < 5) {
+                    //延迟3秒重试
+                    usleep(50000);
+                    $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
+                }
+
+            }
+
+        } catch (\Exception $e) {
+            echo $e->getLine().$e->getMessage();
+        } catch (Error $e) {
+            echo $e->getLine().$e->getMessage();
+        } finally {
+            //finally是在捕获到任何类型的异常后都会运行的一段代码
         }
     }
 
