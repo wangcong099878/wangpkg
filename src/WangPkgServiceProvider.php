@@ -11,7 +11,6 @@ class WangPkgServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //print_r("发布资源");
         //php artisan vendor:publish --provider="Wang\Pkg\WangPkgServiceProvider"
         $this->loadRoutesFrom(__DIR__.'/Routes/wangpkg.php');
 
@@ -45,6 +44,7 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\MakeTab::class,
                 Console\RunSHS::class,
                 Console\TabToShs::class,
+                Console\WangPkgQueue::class,
                 //BarCommand::class,
             ]);
         }

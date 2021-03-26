@@ -29,7 +29,10 @@
         "laravel": {
             "providers": [
                 "Wang\\Pkg\\WangPkgServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "WangPkg": "Wang\\Pkg\\Facades\\WangPkg"
+            }
         }
     }
 }

@@ -152,7 +152,6 @@ function upImg(ret, callback) {
                     case 'application/msword':
                         suffix = '.doc';
                         break;
-
                     case 'application/vnd.android.package-archive':
                         suffix = '.apk';
                         break;

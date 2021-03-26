@@ -15,7 +15,7 @@ class Shell
     //Wang\Pkg\Lib\Shell::execArtisan('wangpkg','taskCount');
     public static function execArtisan($command = "test", $param = '')
     {
-        $shell = escapeshellcmd('/usr/bin/env php ' . base_path('artisan').' '.$command.' '.$param);
+        $shell = escapeshellcmd('/usr/bin/env php ' . base_path('artisan') . ' ' . $command . ' ' . $param);
         $response = exec($shell);
         return $response;
     }
@@ -34,8 +34,8 @@ class Shell
         $result['output'] = $response;
 
         try {
-            $result['json'] = json_decode($response,true);
-        }catch(\Exception $e){
+            $result['json'] = json_decode($response, true);
+        } catch (\Exception $e) {
             $result['json'] = [];
         }
 
@@ -56,8 +56,8 @@ class Shell
         $result['output'] = $response;
 
         try {
-            $result['json'] = json_decode($response,true);
-        }catch(\Exception $e){
+            $result['json'] = json_decode($response, true);
+        } catch (\Exception $e) {
             $result['json'] = [];
         }
 

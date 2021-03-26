@@ -131,6 +131,7 @@ class ChangeTable
             'tinyint:u',
             'int:u',
             'decimal:u',
+            'json'
             ];
 
         $indexMap = [];
@@ -610,6 +611,9 @@ class ChangeTable
                 break;
             case 'longtext':
                 return "\$table->longText('{$v['field']}')->comment('{$v['describe']}'){$existField};\n";
+                break;
+            case 'json':
+                return "\$table->json('{$v['field']}')->nullable()->comment('{$v['describe']}'){$existField};\n";
                 break;
             default:
                 return '';

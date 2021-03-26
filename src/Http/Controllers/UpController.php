@@ -26,6 +26,12 @@ use App\Services\Auth;
 class UpController extends Controller
 {
 
+    public function qiniuHtml(){
+        if (env('APP_ENV') == 'local') {
+            return view('wangpkg::qiniuUp');
+        }
+    }
+
     public function aliyunUp()
     {
         if (isset($_FILES['file']['tmp_name'])) {

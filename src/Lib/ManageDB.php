@@ -40,6 +40,18 @@ class ManageDB
         return self::createAssocMapList($map);
     }
 
+    public static function createCastsMap($mapArr)
+    {
+        $mapStr = self::mapToStr($mapArr);
+        $mapStr = str_replace("\n", "\n\t", $mapStr);
+
+        return <<<ABC
+
+    protected \$casts = {$mapStr};
+
+ABC;
+    }
+
 
     //Wang\Pkg\Lib\ManageDB::createAssocMap('user_info',[1,2,3]);
     public static function createAssocMap($field, $mapArr)
@@ -230,7 +242,8 @@ ABC;
             'datetime' => 'timestamp',
             'text' => 'text',
             'text' => 'longtext',
-            'enum'=>'varchar'
+            'enum'=>'varchar',
+            'json'=>'json'
         ];
 
         $defaultLengthMap = [
@@ -242,7 +255,8 @@ ABC;
             'char' => 255,
             'float' => '8-2',
             'double' => '10-2',
-            'text' => ''
+            'text' => '',
+            'json'=>''
         ];
 
         $defaultMap = [
@@ -256,7 +270,8 @@ ABC;
             'double' => '0.00',
             'timestamp' => '',
             'text' => '',
-            'longtext' => ''
+            'longtext' => '',
+            'json'=>''
         ];
 
 
@@ -329,6 +344,27 @@ ABC;
         return $fieldList;
     }
 
+    //Wang\Pkg\Lib\ManageDB::getJaonMap('notice');  protected $casts =
+    public static function getJaonMap($tabName){
+        $stateMap = [];
+        $columns = \DB::getDoctrineSchemaManager()->listTableColumns($tabName);
+
+        foreach ($columns as $column) {
+            $field = $column->getName();
+            $describe = $column->getComment();
+            //echo $column->getName() . ': ' . $column->getType() . ":".$column->getComment()."\n";
+
+            $typeName = $column->getType()->getName();
+            if($typeName=='json'){
+                $stateMap[$field]='json';
+            }
+        }
+
+        return $stateMap;
+
+    }
+
+
     //Wang\Pkg\Lib\ManageDB::getStateMap('notice');
     public static function getStateMap($tabName)
     {
@@ -377,6 +413,10 @@ ABC;
         }
 
 
+        //$casts = \Wang\Pkg\Lib\ManageDB::createCastsMap(Wang\Pkg\Lib\ManageDB::getJaonMap('testjson'));
+        $casts = self::createCastsMap(self::getJaonMap('testjson'));
+
+
         /*        $expandStr = '';
 
                 if (is_string($expand)){
@@ -410,6 +450,8 @@ class $modelName extends Model
     protected \$fillable = {$fillable};
 
     {$expand}
+
+    {$casts}
 }
 ABC;
 

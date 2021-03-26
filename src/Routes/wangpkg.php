@@ -24,6 +24,7 @@ Route::group(['prefix' => 'wangpkg', 'namespace' => 'Wang\Pkg\Http\Controllers']
     Route::any('upload', 'EditorController@wangUpload');
     Route::any('ueditor', 'EditorController@editorAction');
     Route::post('getQiniuToken', 'UpController@getToken');
+    Route::get('qiniuHtml', 'UpController@qiniuHtml');
     Route::post('ckUpload', 'EditorController@ckUpload');
 
 });
