@@ -337,7 +337,7 @@ class WangPkgQueue extends Command
                             $slaveWorker->pop();
                         } catch (\Exception $e) {
 
-                            echo $e->getLine().$e->getMessage();
+                            echo $e->getLine() . $e->getMessage();
 
                             $slaveWorker->pop();
                         } catch (Error $e) {
@@ -361,7 +361,6 @@ class WangPkgQueue extends Command
         });
 
     }
-
 
     //php artisan wangpkg:queue queueSlave
     public function queueSlave()
