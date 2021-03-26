@@ -414,7 +414,7 @@ ABC;
 
 
         //$casts = \Wang\Pkg\Lib\ManageDB::createCastsMap(Wang\Pkg\Lib\ManageDB::getJaonMap('testjson'));
-        $casts = self::createCastsMap(self::getJaonMap('testjson'));
+        $casts = self::createCastsMap(self::getJaonMap($tabName));
 
 
         /*        $expandStr = '';
