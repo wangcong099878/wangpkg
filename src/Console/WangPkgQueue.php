@@ -227,7 +227,7 @@ class WangPkgQueue extends Command
             $slaveWorkerNum = 10;
         }
 
-        \Co\run(function () use ($config, $taskname,$slaveWorkerNum) {
+        \Co\run(function () use ($config, $taskname, $slaveWorkerNum) {
 
             //实例化redis连接池
             $redisPool = new RedisPool((new RedisConfig)
@@ -306,14 +306,18 @@ class WangPkgQueue extends Command
                                 $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
                                 //echo $stmt->rowCount();
 
-                                $stmt = $pdo->prepare("INSERT INTO `queue_error` (`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:ulid, :error_reason,:created_at,:updated_at)");
+
+                                $sql = "INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)";
+                                $stmt = $pdo->prepare($sql);
                                 $date = date('Y-m-d H:i:s');
                                 $stmt->execute([
+                                    ':taskname' => $queue['taskname'],
                                     ':ulid' => $queue['ulid'],
                                     ':error_reason' => $result,
                                     ':created_at' => $date,
                                     ':updated_at' => $date,
                                 ]);
+
 
                                 //错误重试
                                 $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
@@ -332,9 +336,12 @@ class WangPkgQueue extends Command
 
                             $slaveWorker->pop();
                         } catch (\Exception $e) {
+
+                            echo $e->getLine().$e->getMessage();
+
                             $slaveWorker->pop();
                         } catch (Error $e) {
-
+                            echo $e->getMessage();
                         } finally {
                             //finally是在捕获到任何类型的异常后都会运行的一段代码
                         }

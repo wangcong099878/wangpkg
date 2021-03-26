@@ -20,13 +20,10 @@ content,队列内容,json,,
 taskname,队列名称,varchar,255,
 ulid,ulid,varchar,32,
 error_reason,执行信息,text,65535,
-param1,冗余索引参数,varchar,255,
-param2,冗余索引参数2,varchar,255,
 
 -taskname
 -ulid
--param1
--param2
+
 
 ---
 
