@@ -49,6 +49,7 @@ class QueueController extends AdminController
 
         $grid->actions(function ($actions) {
             $actions->add(new Reset);
+            $actions->disableEdit();
         });
 
         $grid->batchActions(function ($batch) {
@@ -80,9 +81,11 @@ class QueueController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Queue::findOrFail($id));
 
-        $show->field('id', 'id');
+        return Queue::findOrFail($id)->toJson();
+        //return 123456;
+        /*$show = new Show(Queue::findOrFail($id));
+/*        $show->field('id', 'id');
         $show->field('taskname', '队列名称');
         $show->field('ulid', 'ulid');
         $show->field('day', '日期');
@@ -93,9 +96,8 @@ class QueueController extends AdminController
         $show->field('param2', '冗余索引参数2');
         $show->field('content', '队列内容');
         $show->field('created_at', '创建时间');
-        $show->field('updated_at', '更新时间');
-
-        return $show;
+        $show->field('updated_at', '更新时间');*/
+        //return $show;
     }
 
     /**
@@ -115,7 +117,7 @@ class QueueController extends AdminController
         $form->text('error_num', '错误次数');
         $form->text('param1', '冗余索引参数');
         $form->text('param2', '冗余索引参数2');
-        $form->text('content', '队列内容');
+        //$form->text('content', '队列内容');
 
         return $form;
     }
