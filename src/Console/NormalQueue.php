@@ -113,30 +113,40 @@ class NormalQueue extends Command
     //php artisan wangpkg:queue master
     public function master()
     {
-        //防止redis过期
-        $rd = $this->getRd();
-        while (true) {
-            try {
-                //查询为处理的   改为处理中
-                $Queues = Queue::where('state', 1)->get(['id', 'ulid', 'taskname', 'content']);
+        try {
+            //防止redis过期
+            $rd = $this->getRd();
+            while (true) {
+                try {
+                    //查询为处理的   改为处理中
+                    $Queues = Queue::where('state', 1)->get(['id', 'ulid', 'taskname', 'content']);
 
-                foreach ($Queues as $queue) {
-                    //循环写入redis队列
-                    $rd->rPush('queue_' . $queue->taskname, json_encode($queue->toArray()));
-                    $queue->state = 2;
-                    $queue->save();
+                    foreach ($Queues as $queue) {
+                        //循环写入redis队列
+                        $rd->rPush('queue_' . $queue->taskname, json_encode($queue->toArray()));
+                        $queue->state = 2;
+                        $queue->save();
+                    }
+                } catch (\Exception $e) {
+
                 }
-            } catch (\Exception $e) {
-
+                //sleep(1);
+                //sleep for 5 seconds
+                //usleep(5000000);
+                //500 毫秒
+                //usleep(500000);
+                //100毫秒
+                //usleep(100000);
+                usleep(50000);
             }
-            //sleep(1);
-            //sleep for 5 seconds
-            //usleep(5000000);
-            //500 毫秒
-            //usleep(500000);
-            //100毫秒
-            //usleep(100000);
-            usleep(50000);
+        } catch (\Exception $e) {
+            echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+            sleep(3);
+            exit(404);
+        } finally {
+            echo "脚本异常终止！";
+            sleep(3);
+            exit(404);
         }
     }
 
@@ -146,20 +156,30 @@ class NormalQueue extends Command
         if (!$taskName) {
             $taskName = 'normal';
         }
-
-        //防止redis过期
-        $rd = $this->getRd();
-        while (true) {
-            //出队不能使用 rPop，lPop，因为这两个方法是个长连接，一直连着Redis，redis报错如下：  那就使用 brPop，blPop
-            $queueJson = $rd->blPop('queue_' . $taskName,10);
-            if ($queueJson) {
-                $this->runQueue($queueJson);
+        try {
+            //防止redis过期
+            $rd = $this->getRd();
+            while (true) {
+                //出队不能使用 rPop，lPop，因为这两个方法是个长连接，一直连着Redis，redis报错如下：  那就使用 brPop，blPop
+                $queueJson = $rd->blPop('queue_' . $taskName, 10);
+                if ($queueJson) {
+                    $this->runQueue($queueJson);
+                }
             }
+        } catch (\Exception $e) {
+            echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+            sleep(3);
+            exit(404);
+        } finally {
+            echo "脚本异常终止！";
+            sleep(3);
+            exit(404);
         }
     }
 
     //此处必须拎出来
-    public function runQueue($queueJson){
+    public function runQueue($queueJson)
+    {
         try {
             $queue = json_decode($queueJson[1], true);
 
@@ -219,19 +239,19 @@ class NormalQueue extends Command
             }
 
         } catch (\Exception $e) {
-            echo $e->getLine().$e->getMessage();
+            echo $e->getLine() . $e->getMessage();
         } catch (Error $e) {
-            echo $e->getLine().$e->getMessage();
+            echo $e->getLine() . $e->getMessage();
         } finally {
             //finally是在捕获到任何类型的异常后都会运行的一段代码
         }
     }
 
 
-
-    public function test(){
+    public function test()
+    {
         while (true) {
-            QueueServices::add(['taskname'=>'test']);
+            QueueServices::add(['taskname' => 'test']);
         }
     }
 

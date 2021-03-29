@@ -134,38 +134,48 @@ class SwooleQueue extends Command
 
             //实例化
             //$masterWorker = new \chan(2);
+            try {
+                //读取数据库信息   写入redis队列
+                while (true) {
+                    $pdo = $pdoPool->get();
+                    $rd = $redisPool->get();
+                    $statement = $pdo->prepare("SELECT id,ulid,taskname,content FROM queue where state=? limit 100");
+                    $statement->execute([1]);
+                    $queues = $statement->fetchAll(2);
 
-            //读取数据库信息   写入redis队列
-            while (true) {
-                $pdo = $pdoPool->get();
-                $rd = $redisPool->get();
-                $statement = $pdo->prepare("SELECT id,ulid,taskname,content FROM queue where state=? limit 100");
-                $statement->execute([1]);
-                $queues = $statement->fetchAll(2);
+                    if ($queues) {
+                        $ulidList = [];
+                        foreach ($queues as $queue) {
+                            //写入redis
+                            $queue['content'] = json_decode($queue['content'], true);
+                            $rd->rPush('queue_' . $queue['taskname'], json_encode($queue));
+                            $ulidList[] = $queue['ulid'];
+                        }
 
-                if ($queues) {
-                    $ulidList = [];
-                    foreach ($queues as $queue) {
-                        //写入redis
-                        $queue['content'] = json_decode($queue['content'],true);
-                        $rd->rPush('queue_' . $queue['taskname'], json_encode($queue));
-                        $ulidList[] = $queue['ulid'];
+                        if ($ulidList) {
+                            $idStr = implode($ulidList, '\',\'');
+                            $pdo->exec("UPDATE `queue` SET `state`=2 WHERE `ulid` IN ('{$idStr}')");
+                        }
+
+                    } else {
+                        //50毫秒
+                        \Co::sleep(0.05);
                     }
 
-                    if ($ulidList) {
-                        $idStr = implode($ulidList, '\',\'');
-                        $pdo->exec("UPDATE `queue` SET `state`=2 WHERE `ulid` IN ('{$idStr}')");
-                    }
+                    $redisPool->put($rd);
+                    $pdoPool->put($pdo);
 
-                } else {
-                    //50毫秒
-                    \Co::sleep(0.05);
                 }
-
-                $redisPool->put($rd);
-                $pdoPool->put($pdo);
-
+            } catch (\Exception $e) {
+                echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+                sleep(3);
+                exit(404);
+            } finally {
+                echo "脚本异常终止！";
+                sleep(3);
+                exit(404);
             }
+
 
         });
     }
@@ -184,7 +194,7 @@ class SwooleQueue extends Command
             $slaveWorkerNum = 10;
         }
 
-        if(!$taskname){
+        if (!$taskname) {
             $taskname = 'swoole';
         }
 
@@ -220,102 +230,113 @@ class SwooleQueue extends Command
                                 print_r(\Swoole\Coroutine::stats());
                             }
                         });*/
+            try {
+                //读取数据库信息   写入redis队列
+                while (true) {
+                    $rd = $redisPool->get();
 
-            //读取数据库信息   写入redis队列
-            while (true) {
-                $rd = $redisPool->get();
+                    $queueJson = $rd->lPop('queue_' . $taskname);
 
-                $queueJson = $rd->lPop('queue_' . $taskname);
+                    if ($queueJson) {
+                        $slaveWorker->push($queueJson);
+                        go(function () use ($slaveWorker, $queueJson, $pdoPool, $config) {
+                            $pdo = $pdoPool->get();
 
-                if ($queueJson) {
-                    $slaveWorker->push($queueJson);
-                    go(function () use ($slaveWorker, $queueJson, $pdoPool, $config) {
-                        $pdo = $pdoPool->get();
+                            try {
+                                $queue = json_decode($queueJson, true);
 
-                        try {
-                            $queue = json_decode($queueJson, true);
+                                $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($queue['taskname']));
 
-                            $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($queue['taskname']));
+                                $filePath = app_path('QueueAction/' . $taskName . '.php');
 
-                            $filePath = app_path('QueueAction/' . $taskName . '.php');
+                                if (is_file($filePath)) {
+                                    //判断执行方法是否存在
+                                    if (method_exists("\App\QueueAction\\$taskName", "run")) {
+                                        $actionName = "\App\QueueAction\\$taskName::run";
 
-                            if (is_file($filePath)) {
-                                //判断执行方法是否存在
-                                if (method_exists("\App\QueueAction\\$taskName", "run")) {
-                                    $actionName = "\App\QueueAction\\$taskName::run";
+                                        //$queue['content'] = json_decode($queue['content'],true);
 
-                                    //$queue['content'] = json_decode($queue['content'],true);
-
-                                    $result = @$actionName($queue);
+                                        $result = @$actionName($queue);
+                                    } else {
+                                        $result = "执行方法run不存在:" . $filePath;
+                                    }
                                 } else {
-                                    $result = "执行方法run不存在:" . $filePath;
+                                    $result = "执行脚本不存在:" . $filePath;
                                 }
-                            } else {
-                                $result = "执行脚本不存在:" . $filePath;
-                            }
 
-                            //执行成功
-                            if ($result == "success") {
-                                $sql = "UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason WHERE `ulid`=:ulid";
-                                $stmt = $pdo->prepare($sql);
-                                $stmt->execute(array(':state' => 5, ':ulid' => $queue['ulid'], 'error_reason' => $result));
-                                //echo $stmt->rowCount();
-
-                            } else {
-                                $stmt = $pdo->prepare("UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason,`error_num`=error_num+1 WHERE `ulid`=:ulid");
-                                $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
-                                //echo $stmt->rowCount();
-
-
-                                $sql = "INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)";
-                                $stmt = $pdo->prepare($sql);
-                                $date = date('Y-m-d H:i:s');
-                                $stmt->execute([
-                                    ':taskname' => $queue['taskname'],
-                                    ':ulid' => $queue['ulid'],
-                                    ':error_reason' => $result,
-                                    ':created_at' => $date,
-                                    ':updated_at' => $date,
-                                ]);
-
-
-                                //错误重试
-                                $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
-                                $stmt->execute([':ulid' => $queue['ulid']]);
-
-                                $datas = $stmt->fetchAll(2);
-                                if ($datas[0]['error_num'] < 5) {
-                                    //延迟3秒重试
-                                    \Co::sleep($config['delay_retrying_time']);
-                                    $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
+                                //执行成功
+                                if ($result == "success") {
+                                    $sql = "UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason WHERE `ulid`=:ulid";
                                     $stmt = $pdo->prepare($sql);
-                                    $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
+                                    $stmt->execute(array(':state' => 5, ':ulid' => $queue['ulid'], 'error_reason' => $result));
+                                    //echo $stmt->rowCount();
+
+                                } else {
+                                    $stmt = $pdo->prepare("UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason,`error_num`=error_num+1 WHERE `ulid`=:ulid");
+                                    $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
+                                    //echo $stmt->rowCount();
+
+
+                                    $sql = "INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)";
+                                    $stmt = $pdo->prepare($sql);
+                                    $date = date('Y-m-d H:i:s');
+                                    $stmt->execute([
+                                        ':taskname' => $queue['taskname'],
+                                        ':ulid' => $queue['ulid'],
+                                        ':error_reason' => $result,
+                                        ':created_at' => $date,
+                                        ':updated_at' => $date,
+                                    ]);
+
+
+                                    //错误重试
+                                    $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
+                                    $stmt->execute([':ulid' => $queue['ulid']]);
+
+                                    $datas = $stmt->fetchAll(2);
+                                    if ($datas[0]['error_num'] < 5) {
+                                        //延迟3秒重试
+                                        \Co::sleep($config['delay_retrying_time']);
+                                        $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
+                                        $stmt = $pdo->prepare($sql);
+                                        $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
+                                    }
+
                                 }
 
+                                $slaveWorker->pop();
+                            } catch (\Exception $e) {
+
+                                echo $e->getLine() . $e->getMessage();
+
+                                $slaveWorker->pop();
+                            } catch (Error $e) {
+                                echo $e->getLine() . $e->getMessage();
+                            } finally {
+                                //finally是在捕获到任何类型的异常后都会运行的一段代码
                             }
 
-                            $slaveWorker->pop();
-                        } catch (\Exception $e) {
+                            $pdoPool->put($pdo);
+                        });
 
-                            echo $e->getLine() . $e->getMessage();
+                    } else {
+                        //50毫秒
+                        \Co::sleep(0.05);
+                    }
 
-                            $slaveWorker->pop();
-                        } catch (Error $e) {
-                            echo $e->getLine().$e->getMessage();
-                        } finally {
-                            //finally是在捕获到任何类型的异常后都会运行的一段代码
-                        }
+                    $redisPool->put($rd);
 
-                        $pdoPool->put($pdo);
-                    });
-
-                } else {
-                    //50毫秒
-                    \Co::sleep(0.05);
                 }
 
-                $redisPool->put($rd);
 
+            } catch (\Exception $e) {
+                echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+                sleep(3);
+                exit(404);
+            } finally {
+                echo "脚本异常终止！";
+                sleep(3);
+                exit(404);
             }
 
         });
