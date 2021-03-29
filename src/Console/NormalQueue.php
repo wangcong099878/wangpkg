@@ -139,7 +139,7 @@ class NormalQueue extends Command
                 //usleep(100000);
                 usleep(50000);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
             sleep(3);
             exit(404);
@@ -166,7 +166,7 @@ class NormalQueue extends Command
                     $this->runQueue($queueJson);
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
             sleep(3);
             exit(404);
@@ -238,9 +238,7 @@ class NormalQueue extends Command
 
             }
 
-        } catch (\Exception $e) {
-            echo $e->getLine() . $e->getMessage();
-        } catch (Error $e) {
+        } catch (\Throwable $e) {
             echo $e->getLine() . $e->getMessage();
         } finally {
             //finally是在捕获到任何类型的异常后都会运行的一段代码

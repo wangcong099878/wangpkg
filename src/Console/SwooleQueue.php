@@ -301,19 +301,12 @@ class SwooleQueue extends Command
                                         $stmt = $pdo->prepare($sql);
                                         $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
                                     }
-
                                 }
-
-                                $slaveWorker->pop();
-                            } catch (\Exception $e) {
-
-                                echo $e->getLine() . $e->getMessage();
-
-                                $slaveWorker->pop();
-                            } catch (Error $e) {
-                                echo $e->getLine() . $e->getMessage();
+                            } catch (\Throwable $e) {
+                                echo "第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
                             } finally {
                                 //finally是在捕获到任何类型的异常后都会运行的一段代码
+                                $slaveWorker->pop();
                             }
 
                             $pdoPool->put($pdo);
@@ -329,7 +322,7 @@ class SwooleQueue extends Command
                 }
 
 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
                 sleep(3);
                 exit(404);
@@ -433,9 +426,9 @@ class SwooleQueue extends Command
                                 }
 
                             }
-
-                            $slaveWorker->pop();
-                        } catch (\Exception $e) {
+                        } catch (\Throwable $e) {
+                            echo "第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
+                        }finally{
                             $slaveWorker->pop();
                         }
 
