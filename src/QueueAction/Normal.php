@@ -16,13 +16,12 @@ class Normal
     {
         try {
             print_r($q);
-        } catch (\Exception $e) {
-            return 'Exception' . $e->getLine() . ':' . $e->getMessage();
-        } catch (Error $e) {
-            return 'Error' . $e->getLine() . ':' . $e->getMessage();
+        } catch (\Throwable $e) {
+            echo "err 第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
         } finally {
             //finally是在捕获到任何类型的异常后都会运行的一段代码,结束之前也一定会执行
             //echo "run 方法执行失败";
+            //关闭链接  回收资源
         }
 
         return "success";

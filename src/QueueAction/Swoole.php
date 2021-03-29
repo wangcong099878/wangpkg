@@ -24,10 +24,8 @@ class Swoole
     //单独调试 App\QueueAction\Swoole::test(\App\Models\Queue::find(1)->toArray());
     public static function run($q)
     {
-
         //此处为swoole协程中 处理队列信息
         try {
-
             print_r($q);
             //https://wiki.swoole.com/#/coroutine_client/http_client
             //用这个   https://github.com/swlib/saber
@@ -45,13 +43,12 @@ class Swoole
                         $client->post($urlinfo['path'], array('a' => '123', 'b' => '456'));
                         var_dump($client->body);
                         $client->close();*/
-        } catch (\Exception $e) {
-            return 'Exception' . $e->getLine() . ':' . $e->getMessage();
-        } catch (Error $e) {
-            return 'Error' . $e->getLine() . ':' . $e->getMessage();
+        } catch (\Throwable $e) {
+            echo "第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
         } finally {
             //finally是在捕获到任何类型的异常后都会运行的一段代码,结束之前也一定会执行
             //echo "run 方法执行失败";
+            //关闭链接 回收资源 回收连接池  回收wokerchan
         }
 
         //执行成功返回"success"  错误则返回错误信息
