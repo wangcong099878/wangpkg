@@ -16,6 +16,7 @@ class Normal
     {
         try {
             print_r($q);
+            $data = $q['content'];
         } catch (\Throwable $e) {
             echo "err 第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
         } finally {

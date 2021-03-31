@@ -26,6 +26,7 @@ class Swoole
     {
         //此处为swoole协程中 处理队列信息
         try {
+            $data = $q['content'];
             print_r($q);
             //https://wiki.swoole.com/#/coroutine_client/http_client
             //用这个   https://github.com/swlib/saber
