@@ -200,6 +200,10 @@ class NormalQueue extends Command
                 $result = "执行脚本不存在:" . $filePath;
             }
 
+            if (!$result) {
+                $result = 'null';
+            }
+
             $pdo = DB::connection()->getPdo();
             //执行成功
             if ($result == "success") {

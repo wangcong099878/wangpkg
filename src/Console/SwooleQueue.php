@@ -264,6 +264,10 @@ class SwooleQueue extends Command
                                     $result = "执行脚本不存在:" . $filePath;
                                 }
 
+                                if(!$result){
+                                    $result = 'null';
+                                }
+
                                 //执行成功
                                 if ($result == "success") {
                                     $sql = "UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason WHERE `ulid`=:ulid";
