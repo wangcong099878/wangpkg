@@ -15,6 +15,12 @@ use Swoole\Coroutine\Http2\Client;
 use Swoole\Runtime;
 use Swoole\Coroutine;
 
+use Swoole\Database\RedisConfig;
+use Swoole\Database\RedisPool;
+
+use Swoole\Database\PDOConfig;
+use Swoole\Database\PDOPool;
+
 class Swoole
 {
 
@@ -22,10 +28,15 @@ class Swoole
     //post请求也只能使用 swoole中的
     //独立调试  如果用全协程   name这里不能用laravel中的model  只能使用swoole中的连接池操作数据库
     //单独调试 App\QueueAction\Swoole::test(\App\Models\Queue::find(1)->toArray());
-    public static function run($q)
+    public static function run($q,PDOPool $pdoPool,RedisPool $redisPool)
     {
+        $pdo = $pdoPool->get();
         //此处为swoole协程中 处理队列信息
         try {
+
+            var_dump($pdoPool);
+            var_dump($redisPool);
+
             $data = $q['content'];
             print_r($q);
             //https://wiki.swoole.com/#/coroutine_client/http_client
@@ -50,6 +61,7 @@ class Swoole
             //finally是在捕获到任何类型的异常后都会运行的一段代码,结束之前也一定会执行
             //echo "run 方法执行失败";
             //关闭链接 回收资源 回收连接池  回收wokerchan
+            $pdoPool->put($pdo);
         }
 
         //执行成功返回"success"  错误则返回错误信息

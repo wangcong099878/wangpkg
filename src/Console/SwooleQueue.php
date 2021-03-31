@@ -239,7 +239,7 @@ class SwooleQueue extends Command
 
                     if ($queueJson) {
                         $slaveWorker->push($queueJson);
-                        go(function () use ($slaveWorker, $queueJson, $pdoPool, $config) {
+                        go(function () use ($slaveWorker, $queueJson, $pdoPool,$redisPool, $config) {
                             $pdo = $pdoPool->get();
 
                             try {
@@ -256,7 +256,7 @@ class SwooleQueue extends Command
 
                                         //$queue['content'] = json_decode($queue['content'],true);
 
-                                        $result = @$actionName($queue);
+                                        $result = @$actionName($queue,$pdoPool,$redisPool);
                                     } else {
                                         $result = "执行方法run不存在:" . $filePath;
                                     }
