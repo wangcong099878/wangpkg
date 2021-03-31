@@ -20,6 +20,7 @@ use Swoole\Database\RedisPool;
 
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
+use Wang\Pkg\Services\SwooleServices;
 
 class Swoole
 {
@@ -28,14 +29,14 @@ class Swoole
     //post请求也只能使用 swoole中的
     //独立调试  如果用全协程   name这里不能用laravel中的model  只能使用swoole中的连接池操作数据库
     //单独调试 App\QueueAction\Swoole::test(\App\Models\Queue::find(1)->toArray());
-    public static function run($q,PDOPool $pdoPool,RedisPool $redisPool)
+    public static function run(array $q, PDOPool $pdoPool, RedisPool $redisPool)
     {
-        $pdo = $pdoPool->get();
+
         //此处为swoole协程中 处理队列信息
         try {
-
-            var_dump($pdoPool);
-            var_dump($redisPool);
+            $pdo = $pdoPool->get();
+            var_dump($pdo);
+            //var_dump($redisPool);
 
             $data = $q['content'];
             print_r($q);
@@ -72,10 +73,18 @@ class Swoole
     public static function test($q)
     {
         Runtime::enableCoroutine();
-        \Co\run(function () use ($q) {
 
-            go(function () use ($q) {
-                self::run($q);
+        $config = SwooleServices::getConfig();
+
+        \Co\run(function () use ($q, $config) {
+            //实例化redis连接池
+            $redisPool = SwooleServices::getRedisPool($config);
+
+            //实例化pdo连接池
+            $pdoPool = SwooleServices::getPdoPool($config);
+
+            go(function () use ($q, $pdoPool, $redisPool) {
+                self::run($q, $pdoPool, $redisPool);
             });
 
         });

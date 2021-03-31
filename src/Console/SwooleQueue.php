@@ -11,6 +11,8 @@ use App\Models\Queue;
 use App\Models\QueueHistory;
 use Wang\Pkg\Lib\xShell;
 
+use Wang\Pkg\Services\SwooleServices;
+
 use Swoole\Runtime;
 use Swoole\Coroutine;
 use Swoole\Database\RedisConfig;
@@ -80,26 +82,6 @@ class SwooleQueue extends Command
 
     }
 
-    public function getConfig()
-    {
-        $config = [
-            'db_host' => env('DB_HOST'),
-            'db_port' => env('DB_PORT'),
-            'db_database' => env('DB_DATABASE'),
-            'db_username' => env('DB_USERNAME'),
-            'db_password' => env('DB_PASSWORD'),
-            'master_woker_num' => 2,
-            'slave_woker_num' => 40,  //苹果笔记本极限开25个
-            'queue_redis_key' => 'wangpkg_queue',
-            'redis_host' => env('REDIS_HOST'),
-            'redis_password' => env('REDIS_PASSWORD'),
-            'redis_port' => env('REDIS_PORT'),
-            'redis_db' => 0,
-            'delay_retrying_time' => 2
-        ];
-
-        return $config;
-    }
 
     //普通队列版本   协程队列版本
     //php artisan wangpkg:swoole_queue xMaster
@@ -107,29 +89,15 @@ class SwooleQueue extends Command
     {
         Runtime::enableCoroutine();
 
-        $config = $this->getConfig();
+        $config = SwooleServices::getConfig();
 
         \Co\run(function () use ($config) {
 
             //实例化redis连接池
-            $redisPool = new RedisPool((new RedisConfig)
-                ->withHost($config['redis_host'])
-                ->withPort($config['redis_port'])
-                ->withAuth($config['redis_password'])
-                ->withDbIndex($config['redis_db'])
-                ->withTimeout(1)
-            );
+            $redisPool = SwooleServices::getRedisPool($config);
 
             //实例化pdo连接池
-            $pdoPool = new PDOPool((new PDOConfig)
-                ->withHost($config['db_host'])
-                ->withPort($config['db_port'])
-                // ->withUnixSocket('/tmp/mysql.sock')
-                ->withDbName($config['db_database'])
-                ->withCharset('utf8mb4')
-                ->withUsername($config['db_username'])
-                ->withPassword($config['db_password'])
-            );
+            $pdoPool = SwooleServices::getPdoPool($config);
 
 
             //实例化
@@ -186,8 +154,6 @@ class SwooleQueue extends Command
     {
         Runtime::enableCoroutine();
 
-        $config = $this->getConfig();
-
         \Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
         if (!$slaveWorkerNum) {
@@ -198,27 +164,15 @@ class SwooleQueue extends Command
             $taskname = 'swoole';
         }
 
+        $config = SwooleServices::getConfig();
+
         \Co\run(function () use ($config, $taskname, $slaveWorkerNum) {
 
             //实例化redis连接池
-            $redisPool = new RedisPool((new RedisConfig)
-                ->withHost($config['redis_host'])
-                ->withPort($config['redis_port'])
-                ->withAuth($config['redis_password'])
-                ->withDbIndex($config['redis_db'])
-                ->withTimeout(1)
-            );
+            $redisPool = SwooleServices::getRedisPool($config);
 
             //实例化pdo连接池
-            $pdoPool = new PDOPool((new PDOConfig)
-                ->withHost($config['db_host'])
-                ->withPort($config['db_port'])
-                // ->withUnixSocket('/tmp/mysql.sock')
-                ->withDbName($config['db_database'])
-                ->withCharset('utf8mb4')
-                ->withUsername($config['db_username'])
-                ->withPassword($config['db_password'])
-            );
+            $pdoPool = SwooleServices::getPdoPool($config);
 
             //slave数量
             $slaveWorker = new \chan($slaveWorkerNum);
@@ -239,7 +193,7 @@ class SwooleQueue extends Command
 
                     if ($queueJson) {
                         $slaveWorker->push($queueJson);
-                        go(function () use ($slaveWorker, $queueJson, $pdoPool,$redisPool, $config) {
+                        go(function () use ($slaveWorker, $queueJson, $pdoPool, $redisPool, $config) {
                             $pdo = $pdoPool->get();
 
                             try {
@@ -256,7 +210,7 @@ class SwooleQueue extends Command
 
                                         //$queue['content'] = json_decode($queue['content'],true);
 
-                                        $result = @$actionName($queue,$pdoPool,$redisPool);
+                                        $result = @$actionName($queue, $pdoPool, $redisPool);
                                     } else {
                                         $result = "执行方法run不存在:" . $filePath;
                                     }
@@ -264,7 +218,7 @@ class SwooleQueue extends Command
                                     $result = "执行脚本不存在:" . $filePath;
                                 }
 
-                                if(!$result){
+                                if (!$result) {
                                     $result = 'null';
                                 }
 
@@ -432,7 +386,7 @@ class SwooleQueue extends Command
                             }
                         } catch (\Throwable $e) {
                             echo "第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
-                        }finally{
+                        } finally {
                             $slaveWorker->pop();
                         }
 
