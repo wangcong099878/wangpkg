@@ -118,17 +118,16 @@ class SwooleServices
         return $body;
     }
 
-
+    //SwooleServices::file_put_contents(base_path('./test1.txt'),'123456',FILE_APPEND);
     public static function file_put_contents(string $filename, string $fileContent, $flags = 0)
     {
-        return Swoole\Coroutine\System::writeFile($filename, $fileContent, $flags);
+        return \Swoole\Coroutine\System::writeFile($filename, $fileContent, $flags);
     }
 
 
     public static function file_get_contents($filename)
     {
         return \Swoole\Coroutine\System::readFile($filename);
-
     }
 
 }
