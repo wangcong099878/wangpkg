@@ -37,7 +37,7 @@ class QueueErrorController extends AdminController
         $grid->disableExport();
         $grid->disableCreateButton();
         //$grid->disableFilter();
-        $grid->disableRowSelector();
+        //$grid->disableRowSelector();
 
         $grid->filter(function ($filter) {
             //$filter->disableIdFilter();

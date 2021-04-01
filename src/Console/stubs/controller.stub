@@ -25,6 +25,7 @@ class DummyClass extends AdminController
     protected function grid()
     {
         $grid = new Grid(new DummyModel());
+        $grid->model()->orderBy('id', 'desc');
 
 DummyGrid
 
