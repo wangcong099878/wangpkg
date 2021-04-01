@@ -250,16 +250,16 @@ class Wangpkg extends Command
     {
         $queueId = $this->argument('param');
 
-        if(!$queueId){
+        if (!$queueId) {
             $queueId = 1;
         }
 
-        $param1= $this->argument('param1',1);
+        $param1 = $this->argument('param1', 1);
         $param2 = $this->argument('param2');
 
         $q = \App\Models\Queue::find($queueId);
 
-        if(!$q){
+        if (!$q) {
             echo "未找到该队列任务";
         }
 
@@ -270,14 +270,14 @@ class Wangpkg extends Command
 
         $config = SwooleServices::getConfig();
 
-        \Co\run(function () use ($q, $config,$taskName) {
+        \Co\run(function () use ($q, $config, $taskName) {
             //实例化redis连接池
             $redisPool = SwooleServices::getRedisPool($config);
 
             //实例化pdo连接池
             $pdoPool = SwooleServices::getPdoPool($config);
 
-            go(function () use ($q, $pdoPool, $redisPool,$taskName) {
+            go(function () use ($q, $pdoPool, $redisPool, $taskName) {
                 $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($taskName));
                 $actionName = "\App\QueueAction\\$taskName::run";
                 //$queue['content'] = json_decode($queue['content'],true);

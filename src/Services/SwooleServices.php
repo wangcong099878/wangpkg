@@ -14,6 +14,7 @@ use Swoole\Database\RedisPool;
 
 use Swoole\Database\PDOConfig;
 use Swoole\Database\PDOPool;
+use Dotenv\Dotenv;
 
 class SwooleServices
 {
@@ -128,6 +129,27 @@ class SwooleServices
     public static function file_get_contents($filename)
     {
         return \Swoole\Coroutine\System::readFile($filename);
+    }
+
+    //composer require vlucas/phpdotenv:3.3
+    public static function env()
+    {
+        $envPath = base_path('.env');
+        $content = self::file_get_contents($envPath);
+
+        $arr = explode("\n", $content);
+
+        $result = [];
+
+        foreach ($arr as $v) {
+            if (!$v) {
+                continue;
+            }
+            $val = explode("=", $v);
+            $result[$val[0]] = $val[1];
+        }
+
+        return $result;
     }
 
 }

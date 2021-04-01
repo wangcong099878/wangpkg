@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '1c8860d30ad87c7400999aec34248c16c9966394',
+    'reference' => '33da2c972ea4c3236924a8833a8193ebc5da5d40',
     'name' => 'wangcong099878/wangpkg',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '1c8860d30ad87c7400999aec34248c16c9966394',
+      'reference' => '33da2c972ea4c3236924a8833a8193ebc5da5d40',
     ),
   ),
 );
