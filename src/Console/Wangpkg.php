@@ -12,6 +12,7 @@ use App\Models\Queue;
 use App\Models\QueueHistory;
 use Wang\Pkg\Lib\Shell;
 use Wang\Pkg\Services\QueueServices;
+use Wang\Pkg\Services\SwooleServices;
 
 
 class Wangpkg extends Command
@@ -21,7 +22,7 @@ class Wangpkg extends Command
      *
      * @var string
      */
-    protected $signature = 'wangpkg {action?} {param?} {param1?}';
+    protected $signature = 'wangpkg {action?} {param?} {param1?} {param2?}';
 
     /**
      * The console command description.
@@ -186,9 +187,9 @@ class Wangpkg extends Command
                     }
 
                 } catch (\Exception $e) {
-                    echo $e->getLine().$e->getMessage();
+                    echo $e->getLine() . $e->getMessage();
                 } catch (Error $e) {
-                    echo $e->getLine().$e->getMessage();
+                    echo $e->getLine() . $e->getMessage();
                 } finally {
                     //finally是在捕获到任何类型的异常后都会运行的一段代码
                 }
@@ -242,6 +243,49 @@ class Wangpkg extends Command
             }
 
         }
+    }
+
+    //php artisan wangpkg swooleQueue
+    public function swooleQueue($param)
+    {
+        $queueId = $this->argument('param');
+
+        if(!$queueId){
+            $queueId = 1;
+        }
+
+        $param1= $this->argument('param1',1);
+        $param2 = $this->argument('param2');
+
+        $q = \App\Models\Queue::find($queueId);
+
+        if(!$q){
+            echo "未找到该队列任务";
+        }
+
+        $q = $q->toArray();
+        $taskName = $q['taskname'];
+
+        \Swoole\Runtime::enableCoroutine();
+
+        $config = SwooleServices::getConfig();
+
+        \Co\run(function () use ($q, $config,$taskName) {
+            //实例化redis连接池
+            $redisPool = SwooleServices::getRedisPool($config);
+
+            //实例化pdo连接池
+            $pdoPool = SwooleServices::getPdoPool($config);
+
+            go(function () use ($q, $pdoPool, $redisPool,$taskName) {
+                $taskName = ucfirst(\Wang\Pkg\Lib\Util::camelize($taskName));
+                $actionName = "\App\QueueAction\\$taskName::run";
+                //$queue['content'] = json_decode($queue['content'],true);
+                $result = @$actionName($q, $pdoPool, $redisPool);
+            });
+
+        });
+
     }
 
 

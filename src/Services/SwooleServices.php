@@ -70,4 +70,65 @@ class SwooleServices
         return $redisPool;
     }
 
+    public static function post($url, $data)
+    {
+        $urlinfo = parse_url($url);
+        $port = 80;
+        $https = false;
+        if (isset($urlinfo['scheme']) && $urlinfo['scheme'] == 'https') {
+            $port = 443;
+            $https = true;
+        }
+
+        if (isset($urlinfo['port'])) {
+            $port = $urlinfo['port'];
+        }
+
+        $client = new \Swoole\Coroutine\Http\Client($urlinfo['host'], $port, $https);
+        $client->post($urlinfo['path'], $data);
+        $body = $client->body;
+        $client->close();
+
+        return $body;
+    }
+
+    public static function get($url)
+    {
+        $urlinfo = parse_url($url);
+        $port = 80;
+        $https = false;
+        if (isset($urlinfo['scheme']) && $urlinfo['scheme'] == 'https') {
+            $port = 443;
+            $https = true;
+        }
+        $query = '';
+        if (isset($urlinfo['query'])) {
+            $query = '?' . $urlinfo['query'];
+        }
+
+        if (isset($urlinfo['port'])) {
+            $port = $urlinfo['port'];
+        }
+
+        $client = new \Swoole\Coroutine\Http\Client($urlinfo['host'], $port, $https);
+        $client->get($urlinfo['path'] . $query);
+        $body = $client->body;
+        $client->close();
+
+        return $body;
+    }
+
+
+    public static function file_put_contents(string $filename, string $fileContent, $flags = 0)
+    {
+        return Swoole\Coroutine\System::writeFile($filename, $fileContent, $flags);
+    }
+
+
+    public static function file_get_contents($filename)
+    {
+        return \Swoole\Coroutine\System::readFile($filename);
+
+    }
+
 }
