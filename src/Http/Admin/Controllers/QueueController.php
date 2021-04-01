@@ -27,6 +27,7 @@ class QueueController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Queue());
+        $grid->model()->orderBy('id', 'desc');
 
         $grid->column('id', 'id');
         $grid->column('taskname', '队列名称');

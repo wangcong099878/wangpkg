@@ -25,6 +25,7 @@ class QueueErrorController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new QueueError());
+        $grid->model()->orderBy('id', 'desc');
 
         $grid->column('id', 'id');
         $grid->column('ulid', '队列ulid');
