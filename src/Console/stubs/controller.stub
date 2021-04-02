@@ -35,6 +35,8 @@ DummyGrid
         $grid->disableFilter();
         $grid->disableRowSelector();
 
+        $grid->enableHotKeys();
+
         $grid->filter(function ($filter) {
             //$filter->disableIdFilter();
             //$filter->equal('day', '根据日期筛选');
