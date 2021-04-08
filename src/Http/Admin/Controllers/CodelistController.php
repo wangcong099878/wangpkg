@@ -46,6 +46,7 @@ class CodelistController extends AdminController
         $grid->filter(function ($filter) {
             //$filter->disableIdFilter();
             $filter->equal('phone', '手机号码');
+            $filter->equal('ip', 'ip地址');
             $filter->between('created_at', '添加日期')->datetime();
         });
         return $grid;
