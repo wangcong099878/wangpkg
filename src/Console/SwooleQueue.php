@@ -15,11 +15,15 @@ use Wang\Pkg\Services\SwooleServices;
 
 use Swoole\Runtime;
 use Swoole\Coroutine;
-use Swoole\Database\RedisConfig;
-use Swoole\Database\RedisPool;
 
-use Swoole\Database\PDOConfig;
-use Swoole\Database\PDOPool;
+
+use Wang\Pkg\Lib\Swoole\RedisConfig;
+use Wang\Pkg\Lib\Swoole\RedisPool;
+
+use Wang\Pkg\Lib\Swoole\PDOConfig;
+use Wang\Pkg\Lib\Swoole\PDOPool;
+
+use Wang\Pkg\Lib\Log;
 
 class SwooleQueue extends Command
 {
@@ -99,24 +103,59 @@ class SwooleQueue extends Command
             //实例化pdo连接池
             $pdoPool = SwooleServices::getPdoPool($config);
 
-
             //实例化
             //$masterWorker = new \chan(2);
             try {
                 //读取数据库信息   写入redis队列
                 while (true) {
-                    $pdo = $pdoPool->get();
-                    $rd = $redisPool->get();
-                    $statement = $pdo->prepare("SELECT id,ulid,taskname,content FROM queue where state=? limit 100");
-                    $statement->execute([1]);
-                    $queues = $statement->fetchAll(2);
+                    try {
+                        $mysql_connect_num = 1;
+                        mysql_connect:
+                        $mysql_connect_num++;
+
+                        if ($mysql_connect_num > 10) {
+                            Log::showMsgLog('断线重连10次，强制退出');
+                            exit(404);
+                        }
+
+                        $pdo = $pdoPool->get();
+                        $statement = $pdo->prepare("SELECT id,ulid,taskname,content FROM queue where state=? limit 100");
+                        $statement->execute([1]);
+                        $queues = $statement->fetchAll(2);
+                        $pdoPool->put($pdo);
+                    } catch (\Throwable $e) {
+                        Log::showMsgLog('pdo 重连','mysql');
+                        Log::showErrLog($e);
+                        //等待50毫秒
+                        \Co::sleep(0.05);
+                        \Co::sleep(0.05);
+                        // 断线重连
+                        $pdoPool->put(null);
+
+                        goto mysql_connect;
+                    }
 
                     if ($queues) {
                         $ulidList = [];
                         foreach ($queues as $queue) {
                             //写入redis
                             $queue['content'] = json_decode($queue['content'], true);
-                            $rd->rPush('queue_' . $queue['taskname'], json_encode($queue));
+                            try {
+                                redis_connect:
+                                $rd = $redisPool->get();
+                                $rd->rPush('queue_' . $queue['taskname'], json_encode($queue));
+                                $redisPool->put($rd);
+                            } catch (\Throwable $e) {
+                                Log::showMsgLog('重连','redis');
+                                Log::showErrLog($e);
+
+                                //等待100毫秒
+                                \Co::sleep(0.1);
+                                // 断线重连
+                                $redisPool->put(null);
+                                goto redis_connect;
+                            }
+
                             $ulidList[] = $queue['ulid'];
                         }
 
@@ -129,19 +168,15 @@ class SwooleQueue extends Command
                         //50毫秒
                         \Co::sleep(0.05);
                     }
-
-                    $redisPool->put($rd);
-                    $pdoPool->put($pdo);
-
                 }
-            } catch (\Exception $e) {
-                echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+            } catch (\Throwable $e) {
+                Log::showMsgLog('致命异常终止脚本');
+                Log::showErrLog($e);
                 sleep(3);
-                exit(404);
+                //exit(404);
             } finally {
-                echo "脚本异常终止！";
+                //Log::showMsgLog('结束前处理','finally');
                 sleep(3);
-                exit(404);
             }
 
 
@@ -187,14 +222,33 @@ class SwooleQueue extends Command
             try {
                 //读取数据库信息   写入redis队列
                 while (true) {
-                    $rd = $redisPool->get();
 
-                    $queueJson = $rd->lPop('queue_' . $taskname);
+                    //读取lpop数据
+                    try {
+                        redis_connect:
+                        $rd = $redisPool->get();
+                        $queueJson = $rd->lPop('queue_' . $taskname);
+                        $redisPool->put($rd);
+                    } catch (\Throwable $e) {
+                        Log::showMsgLog('重连','redis');
+                        Log::showErrLog($e);
+                        $redisPool->put(null);
+                        \Co::sleep(0.05);
+                        // 断线重连
+                        goto redis_connect;
+                    }
 
+
+                    //执行读取到的数据
                     if ($queueJson) {
                         $slaveWorker->push($queueJson);
                         go(function () use ($slaveWorker, $queueJson, $pdoPool, $redisPool, $config) {
+
+
                             $pdo = $pdoPool->get();
+
+                            //确保pdo的链接状态
+                            //$status = $conn->getAttribute(PDO::ATTR_CONNECTION_STATUS);
 
                             try {
                                 $queue = json_decode($queueJson, true);
@@ -261,7 +315,9 @@ class SwooleQueue extends Command
                                     }
                                 }
                             } catch (\Throwable $e) {
-                                echo "第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
+                                Log::showMsgLog('执行队列发生错误');
+                                Log::showErrLog($e);
+                                //echo "第" . $e->getLine() . "行：" . $e->getMessage() . "\n";
                             } finally {
                                 //finally是在捕获到任何类型的异常后都会运行的一段代码
                                 $slaveWorker->pop();
@@ -275,19 +331,15 @@ class SwooleQueue extends Command
                         \Co::sleep(0.05);
                     }
 
-                    $redisPool->put($rd);
-
                 }
 
-
             } catch (\Throwable $e) {
-                echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+                Log::showMsgLog('循环终止');
+                Log::showErrLog($e);
                 sleep(3);
                 exit(404);
             } finally {
-                echo "脚本异常终止！";
                 sleep(3);
-                exit(404);
             }
 
         });

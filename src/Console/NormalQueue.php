@@ -12,7 +12,7 @@ use App\Models\Queue;
 use App\Models\QueueHistory;
 use Wang\Pkg\Lib\Shell;
 use Wang\Pkg\Services\QueueServices;
-
+use Wang\Pkg\Lib\Log;
 
 class NormalQueue extends Command
 {
@@ -85,16 +85,27 @@ class NormalQueue extends Command
             'port' => env('REDIS_PORT'),
             'password' => env('REDIS_PASSWORD'),
         );
-        $rd = new \Redis();
+        try{
 
-        //$rd->connect($_config['hostname'], $_config['port']);
-        $rd->pconnect($_config['hostname'], $_config['port']);
-        $rd->auth($_config['password']);
-        $rd->select(0);
-        //防止超时 https://blog.csdn.net/qmhball/article/details/52575133  分析超时  strace php sub.php
-        $rd->setOption(\Redis::OPT_READ_TIMEOUT, -1);
+            redis_connect:
+            $rd = new \Redis();
 
-        return $rd;
+            //$rd->connect($_config['hostname'], $_config['port']);
+            $rd->pconnect($_config['hostname'], $_config['port']);
+            $rd->auth($_config['password']);
+            $rd->select(0);
+            //防止超时 https://blog.csdn.net/qmhball/article/details/52575133  分析超时  strace php sub.php
+            $rd->setOption(\Redis::OPT_READ_TIMEOUT, -1);
+
+            return $rd;
+        }catch (\Throwable $e) {
+            Log::showMsgLog('redis准备重连','redis');
+            Log::showErrLog($e);
+
+            sleep(3);
+            goto redis_connect;
+        }
+
     }
 
     //转移成功数据到历史表 php artisan wangpkg transferSuccess
@@ -118,6 +129,7 @@ class NormalQueue extends Command
             $rd = $this->getRd();
             while (true) {
                 try {
+                    shell_restart:
                     //查询为处理的   改为处理中
                     $Queues = Queue::where('state', 1)->get(['id', 'ulid', 'taskname', 'content']);
 
@@ -127,8 +139,13 @@ class NormalQueue extends Command
                         $queue->state = 2;
                         $queue->save();
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
+                    Log::showMsgLog('发生异常准备重启脚本','shell');
+                    Log::showErrLog($e);
 
+                    sleep(3);
+                    $rd = $this->getRd();
+                    goto shell_restart;
                 }
                 //sleep(1);
                 //sleep for 5 seconds
@@ -140,13 +157,11 @@ class NormalQueue extends Command
                 usleep(50000);
             }
         } catch (\Throwable $e) {
-            echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
-            sleep(3);
+            Log::showMsgLog('脚本终止','mysql');
+            Log::showErrLog($e);
             exit(404);
         } finally {
-            echo "脚本异常终止！";
             sleep(3);
-            exit(404);
         }
     }
 
@@ -157,6 +172,7 @@ class NormalQueue extends Command
             $taskName = 'normal';
         }
         try {
+            shell_restart:
             //防止redis过期
             $rd = $this->getRd();
             while (true) {
@@ -167,13 +183,13 @@ class NormalQueue extends Command
                 }
             }
         } catch (\Throwable $e) {
-            echo "发生致命异常：" . $e->getFile() . "行，" . $e->getMessage() . ",正在停止!";
+            Log::showMsgLog('脚本终止','mysql');
+            Log::showErrLog($e);
+            goto shell_restart;
             sleep(3);
             exit(404);
         } finally {
-            echo "脚本异常终止！";
             sleep(3);
-            exit(404);
         }
     }
 
@@ -243,12 +259,12 @@ class NormalQueue extends Command
             }
 
         } catch (\Throwable $e) {
-            echo $e->getLine() . $e->getMessage();
+            Log::showMsgLog('执行队列发生错误');
+            Log::showErrLog($e);
         } finally {
             //finally是在捕获到任何类型的异常后都会运行的一段代码
         }
     }
-
 
     public function test()
     {

@@ -15,11 +15,19 @@ use Swoole\Coroutine\Http2\Client;
 use Swoole\Runtime;
 use Swoole\Coroutine;
 
-use Swoole\Database\RedisConfig;
+/*use Swoole\Database\RedisConfig;
 use Swoole\Database\RedisPool;
 
 use Swoole\Database\PDOConfig;
-use Swoole\Database\PDOPool;
+use Swoole\Database\PDOPool;*/
+
+use Wang\Pkg\Lib\Swoole\RedisConfig;
+use Wang\Pkg\Lib\Swoole\RedisPool;
+
+use Wang\Pkg\Lib\Swoole\PDOConfig;
+use Wang\Pkg\Lib\Swoole\PDOPool;
+
+
 use Wang\Pkg\Services\SwooleServices;
 
 class Swoole
