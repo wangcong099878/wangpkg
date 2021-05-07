@@ -289,7 +289,26 @@ class SwooleQueue extends Command
                                     //echo $stmt->rowCount();
 
 
-                                    $sql = "INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)";
+                                    //错误重试
+                                    $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
+                                    $stmt->execute([':ulid' => $queue['ulid']]);
+
+                                    $datas = $stmt->fetchAll(2);
+
+
+                                    $stmt = $pdo->prepare("INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`try_again`,`error_num`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:try_again,:error_num,:created_at,:updated_at)");
+                                    $date = date('Y-m-d H:i:s');
+                                    $stmt->execute([
+                                        ':taskname' => $queue['taskname'],
+                                        ':ulid' => $queue['ulid'],
+                                        ':error_reason' => $result,
+                                        ':try_again' => 1,
+                                        ':error_num' => $datas[0]['error_num'],
+                                        ':created_at' => $date,
+                                        ':updated_at' => $date,
+                                    ]);
+
+/*                                    $sql = "INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)";
                                     $stmt = $pdo->prepare($sql);
                                     $date = date('Y-m-d H:i:s');
                                     $stmt->execute([
@@ -312,7 +331,7 @@ class SwooleQueue extends Command
                                         $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
                                         $stmt = $pdo->prepare($sql);
                                         $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
-                                    }
+                                    }*/
                                 }
                             } catch (\Throwable $e) {
                                 Log::showMsgLog('执行队列发生错误');

@@ -20,9 +20,12 @@ content,队列内容,json,,
 taskname,队列名称,varchar,255,
 ulid,ulid,varchar,32,
 error_reason,执行信息,text,65535,
+try_again,是否重试?1=未重试&2=已重试,tinyint,1,2
+error_num,错误次数,tinyint,4,0
 
 -taskname
 -ulid
+-try_again,created_at
 
 
 ---

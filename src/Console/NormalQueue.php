@@ -85,7 +85,7 @@ class NormalQueue extends Command
             'port' => env('REDIS_PORT'),
             'password' => env('REDIS_PASSWORD'),
         );
-        try{
+        try {
 
             redis_connect:
             $rd = new \Redis();
@@ -98,8 +98,8 @@ class NormalQueue extends Command
             $rd->setOption(\Redis::OPT_READ_TIMEOUT, -1);
 
             return $rd;
-        }catch (\Throwable $e) {
-            Log::showMsgLog('redis准备重连','redis');
+        } catch (\Throwable $e) {
+            Log::showMsgLog('redis准备重连', 'redis');
             Log::showErrLog($e);
 
             sleep(3);
@@ -140,7 +140,7 @@ class NormalQueue extends Command
                         $queue->save();
                     }
                 } catch (\Throwable $e) {
-                    Log::showMsgLog('发生异常准备重启脚本','shell');
+                    Log::showMsgLog('发生异常准备重启脚本', 'shell');
                     Log::showErrLog($e);
 
                     sleep(3);
@@ -157,7 +157,7 @@ class NormalQueue extends Command
                 usleep(50000);
             }
         } catch (\Throwable $e) {
-            Log::showMsgLog('脚本终止','mysql');
+            Log::showMsgLog('脚本终止', 'mysql');
             Log::showErrLog($e);
             exit(404);
         } finally {
@@ -183,7 +183,7 @@ class NormalQueue extends Command
                 }
             }
         } catch (\Throwable $e) {
-            Log::showMsgLog('脚本终止','mysql');
+            Log::showMsgLog('脚本终止', 'mysql');
             Log::showErrLog($e);
             goto shell_restart;
             sleep(3);
@@ -233,28 +233,33 @@ class NormalQueue extends Command
                 $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));
                 //echo $stmt->rowCount();
 
-                $stmt = $pdo->prepare("INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:created_at,:updated_at)");
-                $date = date('Y-m-d H:i:s');
-                $stmt->execute([
-                    ':taskname' => $queue['taskname'],
-                    ':ulid' => $queue['ulid'],
-                    ':error_reason' => $result,
-                    ':created_at' => $date,
-                    ':updated_at' => $date,
-                ]);
-
                 //错误重试
                 $stmt = $pdo->prepare("SELECT state,error_num FROM `queue` WHERE `ulid`=:ulid");
                 $stmt->execute([':ulid' => $queue['ulid']]);
 
                 $datas = $stmt->fetchAll(2);
-                if ($datas[0]['error_num'] < 5) {
-                    //延迟3秒重试
-                    usleep(50000);
-                    $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
-                }
+
+
+                $stmt = $pdo->prepare("INSERT INTO `queue_error` (`taskname`,`ulid` ,`error_reason`,`try_again`,`error_num`,`created_at`,`updated_at`)VALUES (:taskname,:ulid, :error_reason,:try_again,:error_num,:created_at,:updated_at)");
+                $date = date('Y-m-d H:i:s');
+                $stmt->execute([
+                    ':taskname' => $queue['taskname'],
+                    ':ulid' => $queue['ulid'],
+                    ':error_reason' => $result,
+                    ':try_again' => 1,
+                    ':error_num' => $datas[0]['error_num'],
+                    ':created_at' => $date,
+                    ':updated_at' => $date,
+                ]);
+
+
+                /*                if ($datas[0]['error_num'] < 5) {
+                                    //延迟3秒重试
+                                    usleep(50000);
+                                    $sql = "UPDATE `queue` SET `state`=:state WHERE `ulid`=:ulid";
+                                    $stmt = $pdo->prepare($sql);
+                                    $stmt->execute(array(':state' => 1, ':ulid' => $queue['ulid']));
+                                }*/
 
             }
 

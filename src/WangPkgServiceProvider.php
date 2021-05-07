@@ -51,6 +51,7 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\TabToShs::class,
                 Console\SwooleQueue::class,
                 Console\NormalQueue::class,
+                Console\TryAgain::class,
                 //BarCommand::class,
             ]);
         }

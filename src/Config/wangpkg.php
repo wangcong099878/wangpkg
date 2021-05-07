@@ -8,6 +8,7 @@ return [
     'JWT_SECRET' => env('JWT_SECRET', 'XffANp_xxOeD2meV8龘HKBAR9xx3ef^FaLw&f3pE7UK7E2_9龘4zAT53Pb^C䟆ziM5VI@y95yyUR龘IPXCfGUiizONWEvoX_F3M7oDrLnnTs7T1'),
     'JWT_TTL' => env('JWT_TTL', 1296000),
     'JWT_MULTI_TERMINAL_LOGIN' => env('JWT_MULTI_TERMINAL_LOGIN', true),
+    'try_again_time'=>'10',
     'ueditor_config'=>[
         'imageActionName' => 'uploadimage',
         'imageFieldName' => 'upfile',
