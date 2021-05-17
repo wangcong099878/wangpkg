@@ -66,7 +66,7 @@ class QueueController extends AdminController
             $filter->equal('param2', '索引2');
 
             $map = Queue::$stateMap;
-            $map = array_merge([''=>'全部'],$map);
+            $map['']='全部';
 
             $filter->equal('state', "任务状态")->radio($map);
             $filter->between('created_at', '添加日期')->datetime();
