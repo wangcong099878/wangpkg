@@ -161,7 +161,13 @@ class SwooleQueue extends Command
 
                         if ($ulidList) {
                             $idStr = implode($ulidList, '\',\'');
-                            $pdo->exec("UPDATE `queue` SET `state`=2 WHERE `ulid` IN ('{$idStr}')");
+
+                            $dateStr = date('Y-m-d H:i:s');
+
+                            $pdo->exec("UPDATE `queue` SET `state`=2,`start_at`='".$dateStr."' WHERE `ulid` IN ('{$idStr}')");
+
+                            /*$stmt = $pdo->prepare("UPDATE `queue` SET `state`=:state,`error_reason`=:error_reason,`error_num`=error_num+1 WHERE `ulid`=:ulid");
+                            $stmt->execute(array(':state' => 6, ':ulid' => $queue['ulid'], 'error_reason' => $result));*/
                         }
 
                     } else {

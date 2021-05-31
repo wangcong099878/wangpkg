@@ -132,11 +132,11 @@ class NormalQueue extends Command
                     shell_restart:
                     //查询为处理的   改为处理中
                     $Queues = Queue::where('state', 1)->get(['id', 'ulid', 'taskname', 'content']);
-
                     foreach ($Queues as $queue) {
                         //循环写入redis队列
                         $rd->rPush('queue_' . $queue->taskname, json_encode($queue->toArray()));
                         $queue->state = 2;
+                        $queue->start_at = date('Y-m-d H:i:s');
                         $queue->save();
                     }
                 } catch (\Throwable $e) {
