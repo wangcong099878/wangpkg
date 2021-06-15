@@ -37,7 +37,7 @@
                         contentType: false, //必须
                         success: function (result) {
                             if (result.status == 1) {
-                                imgSrc.push();
+                                //imgSrc.push();
                                 _self.value = '';
                                 _self.outerHTML = _self.outerHTML;
 
