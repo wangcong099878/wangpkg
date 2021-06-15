@@ -49,7 +49,9 @@ class EditorController extends Controller
 
             if ((($_FILES["upload"]["type"] == "image/png")
                     || ($_FILES["upload"]["type"] == "image/jpeg")
-                    || ($_FILES["upload"]["type"] == "image/pjpeg"))
+                    || ($_FILES["upload"]["type"] == "image/pjpeg")
+                    || ($_FILES["upload"]["type"] == "image/vnd.microsoft.icon")
+                )
                 && ($_FILES["upload"]["size"] < 2000000000)) {
                 if ($_FILES["upload"]["error"] > 0) {
                     return ['uploaded' => false, 'url' => ''];
