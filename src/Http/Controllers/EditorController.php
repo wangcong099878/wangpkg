@@ -79,7 +79,8 @@ class EditorController extends Controller
                     //$key = substr($fileinfo['url'], 1);
                     $uploadMgr->putFile($token, $key, $_FILES["upload"]["tmp_name"]);
 
-                    return ['status' => 1, 'url' => env('QINIU_IMG_URL') . $key . '?imageView2/1', 'files' => $_FILES];
+                    //return ['status' => 1, 'url' => env('QINIU_IMG_URL') . $key . '?imageView2/1', 'files' => $_FILES];
+                    return ['status' => 1, 'url' => env('QINIU_IMG_URL') . $key, 'files' => $_FILES];
                 }
             } else {
                 return ['status' => 0, 'url' => '', 'msg' => '上传失败', 'files' => $_FILES];
