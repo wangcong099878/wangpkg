@@ -29,7 +29,7 @@ class VerifyServices extends Base
             ]
         ],
         'code' => [
-            'rules' => 'required|size:6|verify_code',
+            'rules' => 'required|size:6',
             'messages' => [
                 'code.required' => '验证码不可为空', 'code.size' => '长度必须是6位'
             ]
@@ -50,14 +50,14 @@ class VerifyServices extends Base
 
     public function boot()
     {
-        //校验验证码有效性
+/*        //校验验证码有效性
         Validator::extend('verify_code', function ($attribute, $value, $parameters, $validator) {
             try {
                 return \App\Models\Codelist::check($_REQUEST['phone'], $value);
             } catch (\Exception $e) {
                 Response::halt([], 2002, $e->getMessage(), ['param' => 'code']);
             }
-        });
+        });*/
 
     }
 
