@@ -31,7 +31,7 @@ class DummyClass extends Migration
 
 
             #创建model
-            ManageDB::addModel($tableName, true, true);
+            \Wang\Pkg\Lib\ManageDB::addModel($tableName, true, true);
             \DB::statement("ALTER TABLE `$tableName` comment 'DummyTabDescribe' ");
         }
 
