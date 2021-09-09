@@ -35,6 +35,20 @@ DummyGrid
         $grid->disableFilter();
         $grid->disableRowSelector();
 
+        $grid->actions(function ($actions) use ($grid) {
+            $actions->disableDelete();
+            $actions->disableEdit();
+
+            /*if ($actions->row->deleted == 2) {
+                if ($actions->row->state == 1) {
+                    $actions->add(new Pass());
+                    $actions->add(new Fail());
+                }
+                $actions->add(new Del());
+            }*/
+
+        });
+
         $grid->enableHotKeys();
 
         $grid->filter(function ($filter) {
