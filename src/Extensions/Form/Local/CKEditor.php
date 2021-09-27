@@ -1,6 +1,6 @@
 <?php
 
-namespace Wang\Pkg\Extensions\Form;
+namespace Wang\Pkg\Extensions\Form\Local;
 
 use Encore\Admin\Form\Field;
 
@@ -15,7 +15,8 @@ class CKEditor extends Field
 
     public function render()
     {
-        $apiUrl = config('wangpkg.ckUpload');
+
+        $apiUrl = config('wangpkg.local.ckUpload');
         //$this->script = "$('textarea.{$this->getElementClassString()}').ckeditor();";
         $this->script = <<<EOT
 

@@ -1,6 +1,13 @@
 <?php
 //只支持一层配置覆盖
 return [
+    'local'=>[
+        'ckUpload'=>env('LOCAL_CK_UPLOAD', '/wangpkg/lCkUpload'),
+        'upfile'=>env('LOCAL_UP_FILE', '/wangpkg/fileUpload'),
+        'ueditor_api'=>env('LOCAL_UEDITOR_API', '/wangpkg/lUeditor'),
+        'upapi' => env('LOCAL_UP_API', '/wangpkg/lUpload'),
+    ],
+    'ckUpload'=>env('CK_UPLOAD', '/wangpkg/ckUpload'),
     'ueditor_api'=>env('UEDITOR_API', '/wangpkg/ueditor'),
     'upapi' => env('UP_API', '/wangpkg/upload'),
     'upkey' => env('UP_KEY',''), //上传安全key

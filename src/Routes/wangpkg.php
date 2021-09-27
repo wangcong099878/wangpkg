@@ -21,11 +21,18 @@ Route::group(['prefix' => 'wangpkg', 'namespace' => 'Wang\Pkg\Http\Controllers']
         }
     });
 
-    Route::any('upload', 'EditorController@wangUpload');
-    Route::any('ueditor', 'EditorController@editorAction');
     Route::post('getQiniuToken', 'UpController@getToken');
     Route::get('qiniuHtml', 'UpController@qiniuHtml');
+
+    Route::any('upload', 'EditorController@wangUpload');
+    Route::any('ueditor', 'EditorController@editorAction');
     Route::post('ckUpload', 'EditorController@ckUpload');
+
+    /*使用本地存储图片*/
+    Route::any('fileUpload', 'LEditorController@fileUpload');
+    Route::any('lUpload', 'LEditorController@wangUpload');
+    Route::any('lUeditor', 'LEditorController@editorAction');
+    Route::post('lCkUpload', 'LEditorController@ckUpload');
 
 });
 

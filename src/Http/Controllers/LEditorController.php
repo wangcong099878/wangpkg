@@ -18,8 +18,57 @@ use \Qiniu\Auth as qiniu;
 use \Qiniu\Storage\UploadManager;
 use Wang\Pkg\Lib\Ueditor\Uploader;
 
-class EditorController extends Controller
+/*图片将上传到本地public/storage目录下*/
+
+class LEditorController extends Controller
 {
+
+    public function fileUpload()
+    {
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Access-Control-Allow-Credentials:true');
+        header('Access-Control-Allow-Headers: Authorization,Origin, X-Requested-With, Content-Type, Accept');
+        header('Access-Control-Allow-Methods: GET,POST');
+
+
+        try {
+            //Post变量由2M修改为8M，此值改为比upload_max_filesize要大
+            ini_set('post_max_size', '120M');
+            //上传文件修改也为8M，和上面这个有点关系，大小不等的关系。
+            ini_set('upload_max_filesize', '100M');
+            //正在运行的脚本大量使用系统可用内存,上传图片给多点，最好比post_max_size大1.5倍
+            ini_set('memory_limit', '200M');
+
+            // echo "Upload: " . $_FILES["file"]["name"] . "<br />";
+            // echo "Type: " . $_FILES["file"]["type"] . "<br />";
+            // echo "Size: " . ($_FILES["file"]["size"] / 1024) . " Kb<br />";
+            // echo "Temp file: " . $_FILES["file"]["tmp_name"] . "<br />";
+
+            $CONFIG = config('wangpkg.ueditor_config');
+
+            $dirname = public_path('storage');
+
+            //图片地址前缀
+            if(!file_exists($dirname)){
+                !mkdir($dirname, 0777, true);
+            }
+
+            $ext = substr(strrchr($_FILES["upload"]["name"], '.'), 1);
+            $filename = uniqid('file_').'.'.$ext;
+            $filepath = $dirname.'/'.$filename;
+
+
+            move_uploaded_file($_FILES["upload"]["tmp_name"], $filepath);
+            //
+
+            return ['status' => 1, 'url' => env('LOCAL_STATIC_URL').'/storage/'.$filename, 'files' => $_FILES];
+
+
+        } catch (Exception $e) {
+            return ['status' => 0, 'url' => env('QINIU_IMG_URL'), 'files' => $_FILES, 'msg' => $e->getMessage()];
+        }
+    }
 
     public function wangUpload()
     {
@@ -31,11 +80,11 @@ class EditorController extends Controller
 
 
         if (request('updateType') != 'admin') {
-/*            $user = UserAuthServices::fastGetUser();
-            if (!$user) {
-                return ['status' => 0, 'url' => '', 'msg' => '请登录！', 'files' => $user];
-            }
-            $uid = $user->id;*/
+            /*            $user = UserAuthServices::fastGetUser();
+                        if (!$user) {
+                            return ['status' => 0, 'url' => '', 'msg' => '请登录！', 'files' => $user];
+                        }
+                        $uid = $user->id;*/
         }
 
         try {
@@ -62,31 +111,46 @@ class EditorController extends Controller
                     // echo "Size: " . ($_FILES["file"]["size"] / 1024) . " Kb<br />";
                     // echo "Temp file: " . $_FILES["file"]["tmp_name"] . "<br />";
 
-                    $bucket = env('QINIU_BUCKET');
-                    $accessKey = env('QINIU_ACCESS_KEY');
-                    $secretKey = env('QINIU_SECRET_KEY');
+                    $CONFIG = config('wangpkg.ueditor_config');
 
-                    // 初始化签权对象
-                    $auth = new qiniu($accessKey, $secretKey);
-                    // 生成上传Token
-                    $token = $auth->uploadToken($bucket);
-                    // 构建 UploadManager 对象
-                    $uploadMgr = new UploadManager();
+                    //图片地址前缀
+                    $CONFIG['imageUrlPrefix'] = '/';
+                    $config = array(
+                        "pathFormat" => $CONFIG['imagePathFormat'],
+                        "maxSize" => $CONFIG['imageMaxSize'],
+                        "allowFiles" => $CONFIG['imageAllowFiles']
+                    );
+                    /* 生成上传实例对象并完成上传 */
+                    $up = new Uploader('upload', $config, 'upload');
 
-                    $pos = strpos($_FILES["upload"]["name"], '.', 1);
-                    $suffix = substr($_FILES["upload"]["name"], $pos + 1);
-                    $key = uniqid() . '.' . rtrim($suffix, '.');
-                    //$key = substr($fileinfo['url'], 1);
-                    $uploadMgr->putFile($token, $key, $_FILES["upload"]["tmp_name"]);
+                    $fileinfo = $up->getFileInfo();
+
+                    //$up->getFilePath()
+                    /*                    $bucket = env('QINIU_BUCKET');
+                                        $accessKey = env('QINIU_ACCESS_KEY');
+                                        $secretKey = env('QINIU_SECRET_KEY');
+
+                                        // 初始化签权对象
+                                        $auth = new qiniu($accessKey, $secretKey);
+                                        // 生成上传Token
+                                        $token = $auth->uploadToken($bucket);
+                                        // 构建 UploadManager 对象
+                                        $uploadMgr = new UploadManager();
+
+                                        $pos = strpos($_FILES["upload"]["name"], '.', 1);
+                                        $suffix = substr($_FILES["upload"]["name"], $pos + 1);
+                                        $key = uniqid() . '.' . rtrim($suffix, '.');
+                                        //$key = substr($fileinfo['url'], 1);
+                                        $uploadMgr->putFile($token, $key, $_FILES["upload"]["tmp_name"]);*/
 
                     //return ['status' => 1, 'url' => env('QINIU_IMG_URL') . $key . '?imageView2/1', 'files' => $_FILES];
-                    return ['status' => 1, 'url' => env('QINIU_IMG_URL') . $key, 'files' => $_FILES];
+                    return ['status' => 1, 'url' => env('LOCAL_IMG_URL') . $fileinfo['url'], 'files' => $fileinfo];
                 }
             } else {
                 return ['status' => 0, 'url' => '', 'msg' => '上传失败', 'files' => $_FILES];
             }
         } catch (Exception $e) {
-            return ['status' => 0, 'url' => env('QINIU_IMG_URL') . $key, 'files' => $_FILES, 'msg' => $e->getMessage()];
+            return ['status' => 0, 'url' => env('QINIU_IMG_URL'), 'files' => $_FILES, 'msg' => $e->getMessage()];
         }
     }
 
@@ -97,7 +161,7 @@ class EditorController extends Controller
             ini_set('upload_max_filesize', '100M');
             //正在运行的脚本大量使用系统可用内存,上传图片给多点，最好比post_max_size大1.5倍
             ini_set('memory_limit', '200M');
-            $bucket = env('QINIU_BUCKET');
+            /*$bucket = env('QINIU_BUCKET');
             $accessKey = env('QINIU_ACCESS_KEY');
             $secretKey = env('QINIU_SECRET_KEY');
             $auth = new qiniu($accessKey, $secretKey);
@@ -106,10 +170,26 @@ class EditorController extends Controller
             $pos = strpos($_FILES["upload"]["name"], '.', 1);
             $suffix = substr($_FILES["upload"]["name"], $pos + 1);
             $key = uniqid() . '.' . rtrim($suffix, '.');
-            $uploadMgr->putFile($token, $key, $_FILES["upload"]["tmp_name"]);
-            return ['uploaded' => true, 'url' => env('QINIU_IMG_URL') . $key, 'files' => $_FILES];
+            $uploadMgr->putFile($token, $key, $_FILES["upload"]["tmp_name"]);*/
+
+
+            $CONFIG = config('wangpkg.ueditor_config');
+
+            //图片地址前缀
+            $CONFIG['imageUrlPrefix'] = '/';
+            $config = array(
+                "pathFormat" => $CONFIG['imagePathFormat'],
+                "maxSize" => $CONFIG['imageMaxSize'],
+                "allowFiles" => $CONFIG['imageAllowFiles']
+            );
+            /* 生成上传实例对象并完成上传 */
+            $up = new Uploader('upload', $config, 'upload');
+
+            $fileinfo = $up->getFileInfo();
+
+            return ['uploaded' => true, 'url' => env('LOCAL_IMG_URL') . $fileinfo['url'], 'files' => $_FILES];
         } catch (Exception $e) {
-            return ['uploaded' => false, 'url' => env('QINIU_IMG_URL') . $key, 'files' => $_FILES, 'message' => $e->getMessage()];
+            return ['uploaded' => false, 'url' => '', 'files' => $_FILES, 'message' => $e->getMessage()];
         }
     }
 
@@ -187,7 +267,7 @@ class EditorController extends Controller
         $action = $_GET['action'];
 
         //图片地址前缀
-        $CONFIG['imageUrlPrefix'] = rtrim(env('QINIU_IMG_URL'),'/');
+        $CONFIG['imageUrlPrefix'] = rtrim(env('LOCAL_IMG_URL'), '/');
 
         switch ($action) {
             case 'config':
@@ -287,18 +367,18 @@ class EditorController extends Controller
         $fileinfo = $up->getFileInfo();
 
         try {
-            $bucket = env('QINIU_BUCKET');
-            $accessKey = env('QINIU_ACCESS_KEY');
-            $secretKey = env('QINIU_SECRET_KEY');
-            // 初始化签权对象
-            $auth = new qiniu($accessKey, $secretKey);
-            // 生成上传Token
-            $token = $auth->uploadToken($bucket);
-            // 构建 UploadManager 对象
-            $uploadMgr = new UploadManager();
+            /*            $bucket = env('QINIU_BUCKET');
+                        $accessKey = env('QINIU_ACCESS_KEY');
+                        $secretKey = env('QINIU_SECRET_KEY');
+                        // 初始化签权对象
+                        $auth = new qiniu($accessKey, $secretKey);
+                        // 生成上传Token
+                        $token = $auth->uploadToken($bucket);
+                        // 构建 UploadManager 对象
+                        $uploadMgr = new UploadManager();
 
-            $key = substr($fileinfo['url'], 1);
-            $uploadMgr->putFile($token, $key, $up->getFilePath());
+                        $key = substr($fileinfo['url'], 1);
+                        $uploadMgr->putFile($token, $key, $up->getFilePath());*/
         } catch (Exception $e) {
 
         }
