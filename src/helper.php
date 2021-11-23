@@ -23,12 +23,12 @@ if (!function_exists('getAdminUrl')) {
     }
 }
 
-/*if (!function_exists('param')) {
-    function param($key, $rules = "", array $messages = [])
+if (!function_exists('params')) {
+    function params($key, $rules = "", array $messages = [])
     {
         return Wang\Pkg\Services\VerifyServices::make($key, $rules, $messages);
     }
-}*/
+}
 
 if (!function_exists('moneyReg')) {
     function moneyReg($money)
