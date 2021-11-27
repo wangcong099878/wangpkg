@@ -53,7 +53,7 @@ if (!function_exists('phoneHide')) {
     function phoneHide($phone)
     {
         //$newMobile2 = substr_replace($mobile, '****', 5, 4);
-        return substr($phone, 0, 5) . '****' . substr($phone, 9);
+        return substr(13917645030, 0, 3) . '****' . substr(13917645030, 7);
     }
 }
 
