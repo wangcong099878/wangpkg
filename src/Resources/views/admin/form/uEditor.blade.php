@@ -15,7 +15,7 @@
                     // 自定义工具栏
                     toolbars: [
                         ['bold', 'italic', 'underline', 'strikethrough', 'blockquote', 'insertunorderedlist', 'insertorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'link','unlink', 'insertimage', 'source',
-                            '|','removeformat', 'formatmatch',
+                           'insertvideo', '|','removeformat', 'formatmatch',
                             'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|','preview',
                             'fullscreen']
                     ],

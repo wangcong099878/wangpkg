@@ -14,11 +14,11 @@ class WangPkgServiceProvider extends ServiceProvider
         //php artisan vendor:publish --provider="Wang\Pkg\WangPkgServiceProvider"
         $this->loadRoutesFrom(__DIR__.'/Routes/wangpkg.php');
 
-        $this->loadViewsFrom(__DIR__.'/Resources/views', 'wangpkg');
+        $this->loadViewsFrom(__DIR__ . '/Resources/views', 'wangpkg');
 
         //发布视图目录
         $this->publishes([
-            __DIR__.'/Resources/views' => resource_path('views/vendor/wangpkg'),
+            __DIR__ . '/Resources/views' => resource_path('views/vendor/wangpkg'),
         ],'views');
 
         //发布配置文件
@@ -28,7 +28,7 @@ class WangPkgServiceProvider extends ServiceProvider
 
         //发布静态资源
         $this->publishes([
-            __DIR__.'/Resources/assets' => public_path('vendor/wangpkg'),
+            __DIR__ . '/Resources/assets' => public_path('vendor/wangpkg'),
         ], 'public');
 
         //发布静态资源
