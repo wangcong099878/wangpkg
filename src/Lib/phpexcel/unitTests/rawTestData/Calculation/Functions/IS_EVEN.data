@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 		"#NAME?"
 NULL,		"#NAME?"
 -1,		FALSE
@@ -18,3 +19,25 @@ NULL,		"#NAME?"
 "TRUE",		"#VALUE!"
 TRUE,		"#VALUE!"
 FALSE,		"#VALUE!"
+=======
+		"#NAME?"
+NULL,		"#NAME?"
+-1,		FALSE
+0,		TRUE
+9,		FALSE
+1.25,		FALSE
+1.5,		FALSE
+2.25,		TRUE
+2.5,		TRUE
+"",		"#VALUE!"
+"-1",		FALSE
+"2",		TRUE
+"-1.5",		FALSE
+"2.5",		TRUE
+"ABC",		"#VALUE!"
+"#VALUE!",	"#VALUE!"
+"#N/A",		"#VALUE!"
+"TRUE",		"#VALUE!"
+TRUE,		"#VALUE!"
+FALSE,		"#VALUE!"
+>>>>>>> 75843cda3f5a4e019a638852aa867f139c5a9eba

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ,		"Error",	NULL
 TRUE,		"Error",	TRUE
 42,		"Error",	42
@@ -6,3 +7,13 @@ TRUE,		"Error",	TRUE
 "#VALUE!",	"Error",	"Error"
 "#NAME?",	"Error",	"Error"
 "#N/A",		"Error",	"Error"
+=======
+,		"Error",	NULL
+TRUE,		"Error",	TRUE
+42,		"Error",	42
+"",		"Error",	""
+"ABC",		"Error",	"ABC"
+"#VALUE!",	"Error",	"Error"
+"#NAME?",	"Error",	"Error"
+"#N/A",		"Error",	"Error"
+>>>>>>> 75843cda3f5a4e019a638852aa867f139c5a9eba

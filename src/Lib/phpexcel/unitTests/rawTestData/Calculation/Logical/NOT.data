@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 TRUE
 NULL,	TRUE
 -1,	FALSE
@@ -18,3 +19,25 @@ NULL,	TRUE
 "TRUE",	FALSE
 TRUE,	FALSE
 FALSE,	TRUE
+=======
+TRUE
+NULL,	TRUE
+-1,	FALSE
+0,	TRUE
+1,	FALSE
+2,	FALSE
+-1.5,	FALSE
+1.5,	FALSE
+"-1",	"#VALUE!"
+"0",	"#VALUE!"
+"1",	"#VALUE!"
+"2",	"#VALUE!"
+"-1.5",	"#VALUE!"
+"1.5",	"#VALUE!"
+"",	"#VALUE!"
+"ABC",	"#VALUE!"
+"FALSE",TRUE
+"TRUE",	FALSE
+TRUE,	FALSE
+FALSE,	TRUE
+>>>>>>> 75843cda3f5a4e019a638852aa867f139c5a9eba
