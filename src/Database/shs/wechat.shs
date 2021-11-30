@@ -1,0 +1,15 @@
+
+#wechat=微信账户表
+uid,用户id,bigint,20,0
+openid,,varchar,50,
+unionid,,varchar,50,
+nickname,昵称,varchar,50,
+type,,varchar,10,
+sex,性别,varchar,10,
+province,省份,varchar,50,
+city,城市,varchar,50,
+country,国家,varchar,50,
+headimgurl,微信头像地址,varchar,255,
+-unionid
+-openid
+---

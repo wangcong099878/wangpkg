@@ -1,0 +1,53 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use Wang\Pkg\Lib\ManageDB;
+
+class DummyClass extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('DummyTableName', function (Blueprint $table) {
+            //添加的字段
+            DummyFields
+
+            //修改的字段
+
+            //添加索引
+            DummyIndexs
+
+
+            //重新生成model
+            ManageDB::addModel('DummyTableName', true, true);
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('DummyTableName', function (Blueprint $table) {
+            //处理回滚
+
+            //删除字段
+            DeleteField
+
+
+            //删除索引
+            DeleteIndex
+
+
+        });
+    }
+}
