@@ -9,7 +9,7 @@
 
 namespace Wang\Pkg\Extensions\Form\Local;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 class WangEditor extends Field
 {
@@ -26,12 +26,14 @@ class WangEditor extends Field
 
     public function render()
     {
+        $this->variables['id'] = uniqid();
         $name = $this->formatName($this->column);
 
         $this->script = <<<EOT
 
 
 EOT;
+        $this->variables['id'] = uniqid();
         return parent::render();
     }
 }

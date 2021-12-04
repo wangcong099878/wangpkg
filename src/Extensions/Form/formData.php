@@ -9,7 +9,7 @@
 
 namespace Wang\Pkg\Extensions\Form;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 
 class formData extends Field
@@ -29,6 +29,7 @@ class formData extends Field
 
     public function render()
     {
+        $this->variables['id'] = uniqid();
         return parent::render();
     }
 }

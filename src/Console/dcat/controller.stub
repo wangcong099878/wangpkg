@@ -1,0 +1,102 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyRepositories; //App\Admin\Repositories\User
+use Dcat\Admin\Form;
+use Dcat\Admin\Grid;
+use Dcat\Admin\Show;
+use Dcat\Admin\Http\Controllers\AdminController;
+
+class DummyClass extends AdminController
+{
+    /**
+     * Make a grid builder.
+     *
+     * @return Grid
+     */
+    protected function grid()
+    {
+        return Grid::make(new DummyModel(), function (Grid $grid) {
+            $grid->model()->orderBy('id', 'desc');
+            // 这里的字段会自动使用翻译文件
+            /*$grid->column('id')->sortable();*/
+
+            DummyGrid
+
+            $grid->disableActions();
+            $grid->disableExport();
+            $grid->disableCreateButton();
+            $grid->disableFilter();
+            $grid->disableRowSelector();
+
+            $grid->actions(function ($actions) use ($grid) {
+                $actions->disableDelete();
+                $actions->disableEdit();
+
+                /*if ($actions->row->deleted == 2) {
+                    if ($actions->row->state == 1) {
+                        $actions->add(new Pass());
+                        $actions->add(new Fail());
+                    }
+                    $actions->add(new Del());
+                }*/
+
+            });
+
+            $grid->filter(function (Grid\Filter $filter) {
+                $filter->equal('id');
+
+            });
+        });
+    }
+
+    /**
+     * Make a show builder.
+     *
+     * @param mixed $id
+     *
+     * @return Show
+     */
+    protected function detail($id)
+    {
+        return Show::make($id, new DummyModel(), function (Show $show) {
+            // 这里的字段会自动使用翻译文件
+            /*$show->field('id');
+            $show->field('name');
+            $show->field('email');
+            $show->field('email_verified_at');
+            $show->field('password');
+            $show->field('remember_token');
+            $show->field('created_at');
+            $show->field('updated_at');*/
+
+            DummyShow
+
+        });
+    }
+
+    /**
+     * Make a form builder.
+     *
+     * @return Form
+     */
+    protected function form()
+    {
+        return Form::make(new DummyModel(), function (Form $form) {
+            // 这里的字段会自动使用翻译文件
+            /*$form->display('id');
+            $form->text('name');
+            $form->text('email');
+            $form->text('email_verified_at');
+            $form->text('password');
+            $form->text('remember_token');
+
+            $form->display('created_at');
+            $form->display('updated_at');*/
+
+            DummyForm
+
+        });
+    }
+}

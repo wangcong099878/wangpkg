@@ -148,7 +148,7 @@ ABC;
     }
 
     //Wang\Pkg\Lib\ManageDB::getTables();
-    public static function getTables($connect='mysql')
+    public static function getTables($connect = 'mysql')
     {
         $tables = DB::connection($connect)->getDoctrineSchemaManager()->listTableNames();
         return $tables;
@@ -172,17 +172,16 @@ ABC;
             $unique = '';
             if ($index->isUnique()) {
                 $unique = '_unique';
-            }else{
+            } else {
                 $unique = '_index';
             }
             $columns = $index->getColumns();
 
             if (count($columns) > 1) {
-                $indexList[] = $tabName .'_'. implode('_',$columns) . $unique;
-            }else{
-                $indexList[] = $tabName.'_'. $columns[0] . $unique;
+                $indexList[] = $tabName . '_' . implode('_', $columns) . $unique;
+            } else {
+                $indexList[] = $tabName . '_' . $columns[0] . $unique;
             }
-
 
 
         }
@@ -242,8 +241,8 @@ ABC;
             'datetime' => 'timestamp',
             'text' => 'text',
             'text' => 'longtext',
-            'enum'=>'varchar',
-            'json'=>'json'
+            'enum' => 'varchar',
+            'json' => 'json'
         ];
 
         $defaultLengthMap = [
@@ -256,7 +255,7 @@ ABC;
             'float' => '8-2',
             'double' => '10-2',
             'text' => '',
-            'json'=>''
+            'json' => ''
         ];
 
         $defaultMap = [
@@ -271,7 +270,7 @@ ABC;
             'timestamp' => '',
             'text' => '',
             'longtext' => '',
-            'json'=>''
+            'json' => ''
         ];
 
 
@@ -301,10 +300,10 @@ ABC;
         $fieldInfo['field'] = $column->getName();
         $describe = $column->getComment();
 
-        $describe = str_replace(',','，',$describe);
-        $describe = str_replace("'",'‘',$describe);
-        $describe = str_replace('"','‘',$describe);
-        $describe = str_replace('-','',$describe);
+        $describe = str_replace(',', '，', $describe);
+        $describe = str_replace("'", '‘', $describe);
+        $describe = str_replace('"', '‘', $describe);
+        $describe = str_replace('-', '', $describe);
         $fieldInfo['describe'] = $describe;
         if (in_array($type, ['decimal', 'double'])) {
             $fieldInfo['length'] = $columnInfoArr['precision'] . '-' . $columnInfoArr['scale'];
@@ -319,8 +318,6 @@ ABC;
 
         //$fieldInfo['length'] = $column->getLength() ? $column->getLength() : $defaultLengthMap[$type];
         $fieldInfo['default'] = $column->getDefault() ? $column->getDefault() : $defaultMap[$type];
-
-
 
 
         if ($column->getUnsigned() == 1) {
@@ -345,7 +342,8 @@ ABC;
     }
 
     //Wang\Pkg\Lib\ManageDB::getJaonMap('notice');  protected $casts =
-    public static function getJaonMap($tabName){
+    public static function getJaonMap($tabName)
+    {
         $stateMap = [];
         $columns = \DB::getDoctrineSchemaManager()->listTableColumns($tabName);
 
@@ -355,8 +353,8 @@ ABC;
             //echo $column->getName() . ': ' . $column->getType() . ":".$column->getComment()."\n";
 
             $typeName = $column->getType()->getName();
-            if($typeName=='json'){
-                $stateMap[$field]='json';
+            if ($typeName == 'json') {
+                $stateMap[$field] = 'json';
             }
         }
 
@@ -392,9 +390,11 @@ ABC;
     public static function addModel($tabName, $addFillable = true, $cover = false, $expand = '', $connectName = 'mysql')
     {
 
+
         if (!file_exists(base_path('app/Models'))) {
             mkdir(base_path('app/Models'));
         }
+
 
         //$modelName = ucfirst(self::camelize(rtrim($tabName, 's')));
         $modelName = ucfirst(self::camelize($tabName));
@@ -456,6 +456,31 @@ class $modelName extends Model
 ABC;
 
         file_put_contents($path, $str);
+
+        if(!class_exists('\Dcat\Admin\Repositories\EloquentRepository')){
+            return "";
+        }
+
+
+        if (!file_exists(base_path('app/Admin/Repositories'))) {
+            mkdir(base_path('app/Admin/Repositories'));
+        }
+        $rstr = <<<ABC
+<?php
+
+namespace App\Admin\Repositories;
+
+use Dcat\Admin\Repositories\EloquentRepository;
+use App\Models\\{$modelName} as {$modelName}Model;
+
+class $modelName extends EloquentRepository
+{
+     protected \$eloquentClass = {$modelName}Model::class;
+ }
+ABC;
+
+        file_put_contents('app/Admin/Repositories/' . $modelName . '.php', $rstr);
+
     }
 
     /**

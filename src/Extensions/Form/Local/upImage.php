@@ -3,7 +3,7 @@
 
 namespace Wang\Pkg\Extensions\Form\Local;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 class upImage extends Field
 {
@@ -15,8 +15,11 @@ class upImage extends Field
     protected static $js = [
     ];
 
+    protected $variables = [];
+
     public function render()
     {
+        $this->variables['id'] = uniqid();
         return parent::render();
     }
 

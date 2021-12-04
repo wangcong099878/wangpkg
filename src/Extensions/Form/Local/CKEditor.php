@@ -2,7 +2,7 @@
 
 namespace Wang\Pkg\Extensions\Form\Local;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 class CKEditor extends Field
 {
@@ -15,7 +15,7 @@ class CKEditor extends Field
 
     public function render()
     {
-
+        $this->id = uniqid();
         $apiUrl = config('wangpkg.local.ckUpload');
         //$this->script = "$('textarea.{$this->getElementClassString()}').ckeditor();";
         $this->script = <<<EOT
@@ -104,6 +104,7 @@ ClassicEditor
         });
 EOT;
 
+        $this->variables['id'] = $this->id;
         return parent::render();
     }
 }

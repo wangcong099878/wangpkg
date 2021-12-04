@@ -280,7 +280,7 @@ class ResourceGenerator
             if (strpos($comment, '?') !== false && strpos($comment, '=') !== false) {
                 $tabCamelize = ucfirst(ManageDB::camelize($this->model->getTable()));
                 $fieldCamelize = ManageDB::camelize($name);
-                $output .= "->using({$tabCamelize}::\${$fieldCamelize}Map);\r\n";
+                $output .= "->using(\App\Models\\{$tabCamelize}::\${$fieldCamelize}Map);\r\n";
             } else {
                 $output .= ";\r\n";
             }

@@ -1,5 +1,5 @@
-<div class="form-group {!! !$errors->has($errorKey) ?: 'has-error' !!}">
-    <label for="{{$id}}" class="col-sm-2 control-label">{{$label}}</label>
+<div class="form-group row form-field {!! !$errors->has($errorKey) ?: 'has-error' !!}">
+    <label for="{{$id}}" class="col-md-2 text-capitalize control-label">{{$label}}</label>
     <div class="col-sm-8">
         @include('admin::form.error')
         <input type="file" name="文件上传" id="uploadimage{{$id}}" style="display:none;" class="inputFile">

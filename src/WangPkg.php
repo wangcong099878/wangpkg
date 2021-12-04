@@ -22,6 +22,12 @@ class WangPkg
 
     }
 
+    //dcat后台路由
+    public function dcatRouters()
+    {
+
+    }
+
     /**
      * Register the laravel-admin builtin routes.
      *

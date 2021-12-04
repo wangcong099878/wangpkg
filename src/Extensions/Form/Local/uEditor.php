@@ -7,7 +7,7 @@
  * Time: 22:44
  */
 namespace Wang\Pkg\Extensions\Form\Local;
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 /**
  * 百度编辑器
@@ -31,6 +31,8 @@ class uEditor extends Field
 
     public function render()
     {
+        //$this->variables['id'] = md5($this->getFormElementId());
+        $this->variables['id'] = md5($this->getElementClassSelector());
         return parent::render();
     }
 }

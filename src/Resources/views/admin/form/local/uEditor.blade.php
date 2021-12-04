@@ -1,4 +1,4 @@
-<div class="form-group {!! !$errors->has($errorKey) ?: 'has-error' !!}">
+<div class="form-group row form-field {!! !$errors->has($errorKey) ?: 'has-error' !!}">
     <label for="{{$id}}" class="col-sm-2 control-label">{{$label}}</label>
     <div class="col-sm-8">
         @include('admin::form.error')

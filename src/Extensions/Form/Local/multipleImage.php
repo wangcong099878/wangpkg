@@ -8,7 +8,7 @@
 
 namespace Wang\Pkg\Extensions\Form\Local;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 class multipleImage extends Field
 {
@@ -25,6 +25,7 @@ class multipleImage extends Field
 
     public function render()
     {
+        $this->variables['id'] = uniqid();
         return parent::render();
     }
 

@@ -9,7 +9,7 @@
 
 namespace Wang\Pkg\Extensions\Form\Local;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 class upFile extends Field
 {
@@ -27,6 +27,8 @@ class upFile extends Field
     {
         $baseurl = env('QINIU_IMG_URL');
         $bucket = env('QINIU_BUCKET');
+
+        $this->id = uniqid();
 
         $apiUrl = config('wangpkg.local.upfile');
         $this->script = <<<EOT
@@ -120,6 +122,7 @@ file.outerHTML = file.outerHTML;*/
 
             });
 EOT;
+        $this->variables['id'] = $this->id;
         return parent::render();
     }
 

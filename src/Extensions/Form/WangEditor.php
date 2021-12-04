@@ -9,7 +9,7 @@
 
 namespace Wang\Pkg\Extensions\Form;
 
-use Encore\Admin\Form\Field;
+use Dcat\Admin\Form\Field;
 
 class WangEditor extends Field
 {
@@ -32,6 +32,7 @@ class WangEditor extends Field
 
 
 EOT;
+        $this->variables['id'] = uniqid();
         return parent::render();
     }
 }
