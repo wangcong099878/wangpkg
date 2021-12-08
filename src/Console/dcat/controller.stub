@@ -33,6 +33,9 @@ class DummyClass extends AdminController
             $grid->disableFilter();
             $grid->disableRowSelector();
 
+            // 启用简单分页
+            $grid->simplePaginate();
+
             $grid->actions(function ($actions) use ($grid) {
                 $actions->disableDelete();
                 $actions->disableEdit();
@@ -99,6 +102,12 @@ class DummyClass extends AdminController
             $form->display('updated_at');*/
 
             DummyForm
+
+
+            $form->disableResetButton();
+            $form->disableViewCheck();
+            $form->disableEditingCheck();
+            $form->disableCreatingCheck();
 
         });
     }

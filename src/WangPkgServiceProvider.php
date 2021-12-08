@@ -47,6 +47,7 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\Wangpkg::class,
                 Console\MakeCommand::class,
                 Console\DcatCommand::class,
+                Console\ActionCommand::class,
                 Console\MakeTab::class,
                 Console\RunSHS::class,
                 Console\TabToShs::class,
