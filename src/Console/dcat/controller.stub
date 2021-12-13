@@ -28,7 +28,7 @@ class DummyClass extends AdminController
             DummyGrid
 
             $grid->disableActions();
-            $grid->disableExport();
+            //$grid->disableExport();
             $grid->disableCreateButton();
             $grid->disableFilter();
             $grid->disableRowSelector();
