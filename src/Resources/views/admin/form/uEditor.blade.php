@@ -6,7 +6,7 @@
         <textarea type='text/plain' style="height:200px;" id='ueditor{{$id}}'  name="{{$name}}" placeholder="{{ $placeholder }}" {!! $attributes !!}  class='ueditor'>{!! old($column, $value) !!}</textarea>
         <script>
             var ueditor{{$id}};
-            $(function () {
+           // $(function () {
                 //解决第二次进入加载不出来的问题
 /*                UE.delEditor("ueditor{{$id}}");
                 // 默认id是ueditor
@@ -31,8 +31,6 @@
 
             var t{{$id}};
             window.addEventListener('pageshow', function (event) {
-
-
                 t{{$id}} = setInterval(function(){
 
                     if(typeof(UE)!='undefined'){
@@ -85,14 +83,8 @@
                         }
                         sessionStorage.removeItem('refresh');
                     }
-
-
-                },100)
-
-
-
+                },100);
             });
-
             </script>
         @include('admin::form.help-block')
     </div>
