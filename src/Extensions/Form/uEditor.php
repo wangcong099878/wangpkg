@@ -31,8 +31,8 @@ class uEditor extends Field
 
     public function render()
     {
-        //$this->variables['id'] = uniqid();
-        $this->variables['id'] = md5($this->getElementClassSelector());
+        $this->variables['id'] = uniqid();
+        //$this->variables['id'] = md5($this->getElementClassSelector());
         return parent::render();
     }
 }

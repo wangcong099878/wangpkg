@@ -42,7 +42,7 @@ class DummyClass extends AdminController
 
                 /*if ($actions->row->deleted == 2) {
                     if ($actions->row->state == 1) {
-                        $actions->append(new Pass());
+                        $actions->append((new Pass())->setKey($actions->row->id));
                         $actions->append(new Fail());
                     }
                     $actions->append(new Del());
