@@ -16,6 +16,7 @@ return [
     'JWT_TTL' => env('JWT_TTL', 1296000),
     'JWT_MULTI_TERMINAL_LOGIN' => env('JWT_MULTI_TERMINAL_LOGIN', true),
     'try_again_time'=>'10',
+    'UEDITOR_HOME_URL'=>env('UEDITOR_HOME_URL', '/vendor/wangpkg/lib/laravel-u-editor/'),
     'ueditor_config'=>[
         'imageActionName' => 'uploadimage',
         'imageFieldName' => 'upfile',

@@ -60,9 +60,11 @@ JS;
         //$this->variables['id'] = uniqid();
         $this->variables['id'] =$id;
         $serverUrl = config('wangpkg.ueditor_api');
+        $UEDITOR_HOME_URL = config('wangpkg.UEDITOR_HOME_URL');
         $this->script = <<<JS
 (function () {
     var ueditor{$id} = UE.getEditor('ueditor{$id}', {
+        UEDITOR_HOME_URL:"{$UEDITOR_HOME_URL}",
     serverUrl: "{$serverUrl}",
     // 自定义工具栏
     toolbars: [
