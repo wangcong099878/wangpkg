@@ -31,8 +31,32 @@ class uEditor extends Field
 
     public function render()
     {
-        //$this->variables['id'] = md5($this->getFormElementId());
-        $this->variables['id'] = md5($this->getElementClassSelector());
+        $id = md5($this->getElementClassSelector());
+
+        $this->variables['id'] =$id;
+        $serverUrl = config('wangpkg.local.ueditor_api');
+        $this->script = <<<JS
+(function () {
+    var ueditor{$id} = UE.getEditor('ueditor{$id}', {
+    serverUrl: "{$serverUrl}",
+    // 自定义工具栏
+    toolbars: [
+        ['bold', 'italic', 'underline', 'strikethrough', 'blockquote', 'insertunorderedlist', 'insertorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'link', 'unlink', 'insertimage', 'source',
+            'insertvideo', '|', 'removeformat', 'formatmatch',
+            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|', 'preview',
+            'fullscreen']
+    ],
+    elementPathEnabled: false,
+    enableContextMenu: false,
+    autoClearEmptyNode: true,
+    wordCount: false,
+    imagePopup: false,
+    autoHeightEnabled: false,
+    autotypeset: {indent: true, imageBlockLine: 'center'}
+});
+})();
+JS;
+
         return parent::render();
     }
 }

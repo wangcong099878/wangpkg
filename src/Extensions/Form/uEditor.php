@@ -29,10 +29,59 @@ class uEditor extends Field
         'vendor/wangpkg/lib/laravel-u-editor/lang/zh-cn/zh-cn.js'
     ];
 
+
+    /**
+     * 初始化js
+     */
+    protected function setupScript()
+    {
+        $this->attribute('id', $id = $this->generateId());
+
+        $opts = $this->formatOptions();
+
+        $cls = $this->getElementClassString().'_wrapper';
+
+        $this->script = <<<JS
+(function () {
+    var ue = UE.getEditor('{$id}', {$opts});
+    ue.ready(function() {
+        ue.setContent($('.$cls').html());
+        ue.execCommand('serverparam', '_token', Dcat.token);
+        ue.execCommand('serverparam', 'disk', '{$this->disk}');
+    });
+})();
+JS;
+    }
+
+
     public function render()
     {
+        $id = md5($this->getElementClassSelector());
         //$this->variables['id'] = uniqid();
-        $this->variables['id'] = md5($this->getElementClassSelector());
+        $this->variables['id'] =$id;
+        $serverUrl = config('wangpkg.ueditor_api');
+        $this->script = <<<JS
+(function () {
+    var ueditor{$id} = UE.getEditor('ueditor{$id}', {
+    serverUrl: "{$serverUrl}",
+    // 自定义工具栏
+    toolbars: [
+        ['bold', 'italic', 'underline', 'strikethrough', 'blockquote', 'insertunorderedlist', 'insertorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'link', 'unlink', 'insertimage', 'source',
+            'insertvideo', '|', 'removeformat', 'formatmatch',
+            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|', 'preview',
+            'fullscreen']
+    ],
+    elementPathEnabled: false,
+    enableContextMenu: false,
+    autoClearEmptyNode: true,
+    wordCount: false,
+    imagePopup: false,
+    autoHeightEnabled: false,
+    autotypeset: {indent: true, imageBlockLine: 'center'}
+});
+})();
+JS;
+
         return parent::render();
     }
 }
