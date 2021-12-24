@@ -70,7 +70,7 @@ JS;
     toolbars: [
         ['bold', 'italic', 'underline', 'strikethrough', 'blockquote', 'insertunorderedlist', 'insertorderedlist', 'justifyleft', 'justifycenter', 'justifyright', 'link', 'unlink', 'insertimage', 'source',
             'insertvideo', '|', 'removeformat', 'formatmatch',
-            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|', 'preview',
+            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|', 'preview','forecolor', 'backcolor',
             'fullscreen']
     ],
     elementPathEnabled: false,
