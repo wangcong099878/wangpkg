@@ -78,7 +78,6 @@ class PHPExcel_Shared_OLE_PPS_Root extends PHPExcel_Shared_OLE_PPS
 
 		if (is_resource($filename)) {
 		    $this->_FILEH_ = $filename;
-<<<<<<< HEAD
 		} else if ($filename == '-' || $filename == '') {
 			if ($this->_tmp_dir === NULL)
 				$this->_tmp_dir = PHPExcel_Shared_File::sys_get_temp_dir();
@@ -86,15 +85,6 @@ class PHPExcel_Shared_OLE_PPS_Root extends PHPExcel_Shared_OLE_PPS
 			$this->_FILEH_ = fopen($this->_tmp_filename,"w+b");
 			if ($this->_FILEH_ == false) {
 				throw new PHPExcel_Writer_Exception("Can't create temporary file.");
-=======
-		} else if ($filename == '-' || $filename == '') {
-			if ($this->_tmp_dir === NULL)
-				$this->_tmp_dir = PHPExcel_Shared_File::sys_get_temp_dir();
-			$this->_tmp_filename = tempnam($this->_tmp_dir, "OLE_PPS_Root");
-			$this->_FILEH_ = fopen($this->_tmp_filename,"w+b");
-			if ($this->_FILEH_ == false) {
-				throw new PHPExcel_Writer_Exception("Can't create temporary file.");
->>>>>>> 75843cda3f5a4e019a638852aa867f139c5a9eba
 			}
 		} else {
 			$this->_FILEH_ = fopen($filename, "wb");
@@ -104,11 +94,7 @@ class PHPExcel_Shared_OLE_PPS_Root extends PHPExcel_Shared_OLE_PPS
 		}
 		// Make an array of PPS's (for Save)
 		$aList = array();
-<<<<<<< HEAD
 		PHPExcel_Shared_OLE_PPS::_savePpsSetPnt($aList, array($this));
-=======
-		PHPExcel_Shared_OLE_PPS::_savePpsSetPnt($aList, array($this));
->>>>>>> 75843cda3f5a4e019a638852aa867f139c5a9eba
 		// calculate values for header
 		list($iSBDcnt, $iBBcnt, $iPPScnt) = $this->_calcSize($aList); //, $rhInfo);
 		// Save Header
