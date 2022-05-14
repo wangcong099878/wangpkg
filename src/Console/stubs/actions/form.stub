@@ -1,0 +1,76 @@
+<?php
+
+namespace DummyNamespace;
+
+use Dcat\Admin\Widgets\Form;
+use Dcat\Admin\Traits\LazyWidget;
+use Dcat\Admin\Contracts\LazyRenderable;
+
+class DummyClassForm extends Form implements LazyRenderable
+{
+    use LazyWidget;
+
+    /**
+     * Handle the form request.
+     *
+     * @param array $input
+     *
+     * @return mixed
+     */
+    public function handle(array $input)
+    {
+        // 获取外部传递参数
+        $id = $this->payload['id'] ?? null;
+        // dump($input);
+
+        // return $this->response()->error('Your error message.');
+
+        return $this
+				->response()
+				->success('Processed successfully.')
+				->refresh();
+    }
+
+    public function test(){
+            /*
+    //使用说明
+        $modal = Modal::make()
+            ->lg()
+            ->title('DummyTitle')
+            ->body(\DummyNamespace\DummyClassForm::make()->payload(['id' => '123'])) // 传递自定义参数
+            ->button('DummyTitle');
+            */
+    }
+
+    /**
+     * Build a form here.
+     */
+    public function form()
+    {
+
+        // 获取外部传递参数
+        $id = $this->payload['id'] ?? null;
+
+        // Since v1.6.5 弹出确认弹窗
+        //$this->confirm('您确定要提交表单吗', 'content');
+
+        $this->text('name')->required();
+        $this->email('email')->rules('email');
+    }
+
+    /**
+     * The data of the form.
+     *
+     * @return array
+     */
+    public function default()
+    {
+        // 获取外部传递参数
+        $id = $this->payload['id'] ?? null;
+
+        return [
+            'name'  => 'John Doe',
+            'email' => 'John.Doe@gmail.com',
+        ];
+    }
+}
