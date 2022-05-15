@@ -13,6 +13,8 @@ class DummyModelClassTab extends LazyRenderable
     {
         $id = $this->payload['id'];
         return Grid::make(new DummyModelClass(), function (Grid $grid)use($id) {
+            //$grid->model()->where('universitie_id',$id)->orderBy('year', 'desc');
+
             $grid->column('id', 'ID')->sortable();
             //$grid->column('name', '名称');
             //$grid->column('title', '标题');
