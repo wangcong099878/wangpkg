@@ -1,0 +1,31 @@
+<?php
+
+namespace DummyNamespace;
+
+use DummyNamespace\DummyClassForm;
+use Dcat\Admin\Widgets\Modal;
+use Dcat\Admin\Grid\RowAction;
+
+class DummyClassAction extends RowAction
+{
+    protected $title = 'DummyTitle';
+
+    public function render()
+    {
+        // 实例化表单类并传递自定义参数
+        $form = DummyClassForm::make()->payload(['id' => $this->getKey()]);
+
+        return Modal::make()
+            ->lg()
+            ->title($this->title)
+            ->body($form)
+            ->button($this->title);
+    }
+
+    public function test(){
+    /* 使用
+        //$grid->actions([new \DummyNamespace\DummyClassAction()]);
+        $actions->append(new \DummyNamespace\DummyClassAction());
+        */
+    }
+}

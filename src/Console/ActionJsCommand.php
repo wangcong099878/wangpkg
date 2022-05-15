@@ -4,21 +4,21 @@ namespace Wang\Pkg\Console;
 
 //use Dcat\Admin\Console\GeneratorCommand;
 
-class ActionFormCommand extends GeneratorCommand
+class ActionJsCommand extends GeneratorCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'wangpkg:aForm {classname?} {textname?}';
+    protected $signature = 'wangpkg:actionJs {classname?} {btnname?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '创建行操作表单';
+    protected $description = '创建JS操作';
 
     /**
      * @var string
@@ -31,7 +31,7 @@ class ActionFormCommand extends GeneratorCommand
     protected $className;
 
 
-    protected $textName;
+    protected $actionName;
 
     /**
      * @var string
@@ -42,28 +42,28 @@ class ActionFormCommand extends GeneratorCommand
      * @var array
      */
     protected $namespaceMap = [
-        'action-form' => 'ActionForm',
+        'action-js' => 'ActionJS',
     ];
 
     public function handle()
     {
 
-        //php artisan wangpkg:aForm AddTest 添加测试
+        //php artisan wangpkg:actionJS Up 上线
         //action-form
-        $actiontype = 'action-form';
+        $actiontype = 'action-js';
         $classname = $this->argument('classname');
-        $textname = $this->argument('textname');
+        $actionname = $this->argument('btnname');
 
         // echo 123456;
         $this->choice = $actiontype;
         $this->className = $classname;
-        $this->textName = $textname;
+        $this->actionName = $actionname;
 
 
         //生成action类
         $name = $this->qualifyClass($this->getNameInput());
 
-        $path = $this->getPath($name . 'Action');
+        $path = $this->getPath($name);
         //判断是否强制覆盖
         if ((!$this->hasOption('force') ||
                 !$this->option('force')) &&
@@ -73,35 +73,9 @@ class ActionFormCommand extends GeneratorCommand
         }
 
         $this->makeDirectory($path);
+
         //写入文件
-
-        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-form-btn.stub");
-
-        $buildClass = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
-
-        $this->files->put($path, $this->sortImports($buildClass));
-
-        $this->info($this->type . ' created successfully.');
-
-
-        //生成form类
-        $name = $this->qualifyClass($this->getNameInput());
-
-        $path = $this->getPath($name . 'Form');
-
-        //是否强制
-        if ((!$this->hasOption('force') ||
-                !$this->option('force')) &&
-            $this->alreadyExists($this->getNameInput())) {
-            $this->error($this->type . ' already exists!');
-
-            return false;
-        }
-
-        //创建目录
-        $this->makeDirectory($path);
-
-        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-form.stub");
+        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-js.stub");
 
         $buildClass = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 
@@ -140,7 +114,7 @@ class ActionFormCommand extends GeneratorCommand
             ],
             [
                 $this->className,
-                $this->textName,
+                $this->actionName,
             ],
             $stub
         );
@@ -171,6 +145,9 @@ class ActionFormCommand extends GeneratorCommand
         $segments = explode('\\', config('admin.route.namespace'));
         array_pop($segments);
         array_push($segments, 'Actions');
+
+        //按model名称分目录
+        //array_push($segments, $this->modelName);
 
         if (isset($this->namespaceMap[$this->choice])) {
             array_push($segments, $this->namespaceMap[$this->choice]);

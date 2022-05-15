@@ -4,21 +4,21 @@ namespace Wang\Pkg\Console;
 
 //use Dcat\Admin\Console\GeneratorCommand;
 
-class ActionFormCommand extends GeneratorCommand
+class ToolFormCommand extends GeneratorCommand
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'wangpkg:aForm {classname?} {textname?}';
+    protected $signature = 'wangpkg:toolForm {classname?} {textname?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '创建行操作表单';
+    protected $description = '创建操作栏弹窗表单';
 
     /**
      * @var string
@@ -42,19 +42,18 @@ class ActionFormCommand extends GeneratorCommand
      * @var array
      */
     protected $namespaceMap = [
-        'action-form' => 'ActionForm',
+        'action-form' => 'ToolForm',
     ];
 
     public function handle()
     {
 
-        //php artisan wangpkg:aForm AddTest 添加测试
+        //php artisan wangpkg:toolForm removeCache 删除缓存
         //action-form
         $actiontype = 'action-form';
         $classname = $this->argument('classname');
         $textname = $this->argument('textname');
 
-        // echo 123456;
         $this->choice = $actiontype;
         $this->className = $classname;
         $this->textName = $textname;
@@ -63,7 +62,7 @@ class ActionFormCommand extends GeneratorCommand
         //生成action类
         $name = $this->qualifyClass($this->getNameInput());
 
-        $path = $this->getPath($name . 'Action');
+        $path = $this->getPath($name . 'Btn');
         //判断是否强制覆盖
         if ((!$this->hasOption('force') ||
                 !$this->option('force')) &&
@@ -73,9 +72,9 @@ class ActionFormCommand extends GeneratorCommand
         }
 
         $this->makeDirectory($path);
-        //写入文件
 
-        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-form-btn.stub");
+        //写入文件
+        $stub = $this->files->get(__DIR__ . "/stubs/actions/tool-form-btn.stub");
 
         $buildClass = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 
@@ -101,7 +100,7 @@ class ActionFormCommand extends GeneratorCommand
         //创建目录
         $this->makeDirectory($path);
 
-        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-form.stub");
+        $stub = $this->files->get(__DIR__ . "/stubs/actions/tool-form.stub");
 
         $buildClass = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 

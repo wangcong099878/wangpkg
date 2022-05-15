@@ -1,0 +1,74 @@
+<?php
+
+namespace DummyNamespace;
+
+use Dcat\Admin\Widgets\Form;
+use Dcat\Admin\Traits\LazyWidget;
+use Dcat\Admin\Contracts\LazyRenderable;
+
+class DummyClassForm extends Form implements LazyRenderable
+{
+    use LazyWidget;
+
+    /**
+     * @var string
+     */
+    protected $style = 'btn btn-primary filter-btn-xbsxxqg0 btn-outline';
+
+    /**
+     * Handle the form request.
+     *
+     * @param array $input
+     *
+     * @return mixed
+     */
+    public function handle(array $input)
+    {
+        // 获取外部传递参数
+        $id = $this->payload['id'] ?? null;
+        $uniqid = $input['uniqid'];
+
+        //$rd = \App\Lib\EasyRedis::getInstance();
+        //$rd->del('wap_'.'/p/'.$uniqid.'.html');
+        //$rd->del('web_'.'/p/'.$uniqid.'.html');
+        // return $this->response()->error('Your error message.');
+
+        return $this
+				->response()
+				->success('操作成功')
+				->refresh();
+    }
+
+    public function test(){
+        /*
+        $form = \DummyNamespace\DummyClassForm::make()->payload(['id' => 1]);
+        return Modal::make()
+            ->lg()
+            ->title('DummyTitle')
+            ->body($form)
+            ->button('<a class="btn btn-primary filter-btn-xbsxxqg0 btn-outline">DummyTitle</a>');
+        */
+    }
+
+    /**
+     * Build a form here.
+     */
+    public function form()
+    {
+        $this->text('uniqid','文章id')->required();
+        //$this->email('email')->rules('email');
+    }
+
+    /**
+     * The data of the form.
+     *
+     * @return array
+     */
+    public function default()
+    {
+        return [
+            //'name'  => 'John Doe',
+            //'email' => 'John.Doe@gmail.com',
+        ];
+    }
+}

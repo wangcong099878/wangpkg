@@ -18,7 +18,7 @@ class ActionTabCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Make a admin action';
+    protected $description = '创建行操作表格';
 
     /**
      * @var string
@@ -42,14 +42,6 @@ class ActionTabCommand extends GeneratorCommand
      * @var array
      */
     protected $namespaceMap = [
-        'grid-batch' => 'Grid',
-        'grid-row' => 'Grid',
-        'grid-tool' => 'Grid',
-        'form-tool' => 'Form',
-        'show-tool' => 'Show',
-        'tree-row' => 'Tree',
-        'tree-tool' => 'Tree',
-        'action-form' => 'ActionForm',
         'action-tab' => 'ActionTab',
     ];
 
@@ -81,7 +73,7 @@ class ActionTabCommand extends GeneratorCommand
         $this->makeDirectory($path);
 
         //写入文件
-        $stub = $this->files->get(__DIR__ . "/stubs/actions/{$this->choice}.stub");
+        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-tab-btn.stub");
 
         $buildClass = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 
@@ -95,9 +87,7 @@ class ActionTabCommand extends GeneratorCommand
 
         $path = $this->getPath($name . 'Tab');
 
-        // First we will check to see if the class already exists. If it does, we don't want
-        // to create the class and overwrite the user's code. So, we will bail out so the
-        // code is untouched. Otherwise, we will continue generating this class' files.
+        //强制覆盖
         if ((!$this->hasOption('force') ||
                 !$this->option('force')) &&
             $this->alreadyExists($this->getNameInput())) {
@@ -106,12 +96,9 @@ class ActionTabCommand extends GeneratorCommand
             return false;
         }
 
-        // Next, we will generate the path to the location where this class' file should get
-        // written. Then, we will build the class and make the proper replacements on the
-        // stub files so that it gets the correctly formatted namespace and class name.
         $this->makeDirectory($path);
 
-        $stub = $this->files->get(__DIR__ . "/stubs/actions/tab.stub");
+        $stub = $this->files->get(__DIR__ . "/stubs/actions/action-tab.stub");
 
         $buildClass = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 
@@ -128,15 +115,6 @@ class ActionTabCommand extends GeneratorCommand
     protected function actionTyps()
     {
         return [
-            'default',
-            'grid-batch',
-            'grid-row',
-            'grid-tool',
-            'form-tool',
-            'show-tool',
-            'tree-row',
-            'tree-tool',
-            'action-form',
             'action-tab',
         ];
     }
