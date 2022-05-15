@@ -39,6 +39,17 @@ class DummyClassForm extends Form implements LazyRenderable
             ->title('DummyTitle')
             ->body(\DummyNamespace\DummyClassForm::make()->payload(['id' => '123'])) // 传递自定义参数
             ->button('DummyTitle');
+
+            //grid中使用
+            $grid->column('DummyClassForm')->display('DummyTitle')->modal(function (Grid\Displayers\Modal $modal) {
+                // 标题
+                $modal->title('DummyTitle');
+                // 自定义图标
+                $modal->icon('feather icon-edit');
+                // 传递当前行字段值
+                return \DummyNamespace\DummyClassForm::make()->payload(['id' => $this->id]);
+            });
+
             */
     }
 

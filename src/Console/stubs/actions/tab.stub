@@ -61,6 +61,15 @@ class DummyModelClassTab extends LazyRenderable
             return \DummyNamespace\DummyModelClassTab::make()->payload(['id' => $this->id]);
         });
 
+        //grid中使用
+        $grid->column('avgMonthCost')->display('异步表单')->modal(function (Grid\Displayers\Modal $modal) {
+            // 标题
+            $modal->title('弹窗标题');
+            // 自定义图标
+            $modal->icon('feather icon-edit');
+            // 传递当前行字段值
+            return UserProfile::make()->payload(['name' => $this->name]);
+        });
 
         */
     }
