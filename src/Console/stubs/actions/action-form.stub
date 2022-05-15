@@ -41,7 +41,7 @@ class DummyClassForm extends Form implements LazyRenderable
             ->button('DummyTitle');
 
             //grid中使用
-            $grid->column('DummyClassForm')->display('DummyTitle')->modal(function (Grid\Displayers\Modal $modal) {
+            $grid->column('DummyClassForm','DummyTitle')->display('DummyTitle')->modal(function (Grid\Displayers\Modal $modal) {
                 // 标题
                 $modal->title('DummyTitle');
                 // 自定义图标
