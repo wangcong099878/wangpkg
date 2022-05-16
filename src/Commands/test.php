@@ -52,17 +52,6 @@ class test extends Command
 
     }
 
-    public function toFast($subdomain, $domain)
-    {
-
-    }
-
-
-    public function swooxy()
-    {
-
-    }
-
     //php artisan test sGet
     public function sGet()
     {

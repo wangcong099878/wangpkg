@@ -12,6 +12,7 @@ class WangPkgServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         //php artisan vendor:publish --provider="Wang\Pkg\WangPkgServiceProvider"
         $this->loadRoutesFrom(__DIR__.'/Routes/wangpkg.php');
 
