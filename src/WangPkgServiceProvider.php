@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 
 class WangPkgServiceProvider extends ServiceProvider
 {
+
     /**
      * {@inheritdoc}
      */
@@ -15,6 +16,14 @@ class WangPkgServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/Routes/wangpkg.php');
 
         $this->loadViewsFrom(__DIR__ . '/Resources/views', 'wangpkg');
+
+        //is_dir()
+        if(!file_exists(app_path('Console/Commands'))){
+            //初始化console
+            $this->publishes([
+                __DIR__ . '/Commands' => app_path('Console/Commands'),
+            ],'console');
+        }
 
         //发布视图目录
         $this->publishes([
