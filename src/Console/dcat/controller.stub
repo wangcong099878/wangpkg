@@ -36,6 +36,9 @@ class DummyClass extends AdminController
             // 启用简单分页
             $grid->simplePaginate();
 
+            //$grid->setActionClass(\Dcat\Admin\Grid\Displayers\Actions::class);
+            //$grid->setActionClass(\Dcat\Admin\Grid\Displayers\DropdownActions::class);
+
             $grid->actions(function ($actions) use ($grid) {
                 $actions->disableDelete();
                 $actions->disableEdit();
@@ -95,7 +98,7 @@ class DummyClass extends AdminController
             DummyForm
 
             $form->saved(function (Form $form) {
-                return $form->response()->success('保存成功')->redirect('universitie');
+                return $form->response()->success('保存成功')->redirect('DummyRedirect');
             });
 
             $form->disableResetButton();
@@ -188,7 +191,7 @@ class DummyClass extends AdminController
 
 
                 //可以中断用户请求
-                return $form->response()->error('系统错误')->redirect('universitie');
+                return $form->response()->error('系统错误')->redirect('DummyRedirect');
             });*/
 
             // 保存后回调，此事件新增和修改操作共用，通过第二个参数 $result 可以判断数据是否保存成功。 跳转并提示成功信息
@@ -219,7 +222,7 @@ class DummyClass extends AdminController
                     $form->model()->update(['data' => 'new']);
 
 
-                return $form->response()->success('保存成功')->redirect('universitie');
+                return $form->response()->success('保存成功')->redirect('DummyRedirect');
             });*/
 
             //删除前回调

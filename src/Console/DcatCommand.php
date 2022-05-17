@@ -159,6 +159,8 @@ class DcatCommand extends GeneratorCommand
     {
         $stub = parent::replaceClass($stub, $name);
 
+        //echo lcfirst(str_replace('Controller','',$name));
+        $controllerName = str_replace($this->getNamespace($name).'\\', '', $name);
         return str_replace(
             [
                 'DummyModelNamespace',
@@ -167,7 +169,8 @@ class DcatCommand extends GeneratorCommand
                 'DummyGrid',
                 'DummyShow',
                 'DummyForm',
-                'DummyRepositories'
+                'DummyRepositories',
+                'DummyRedirect'
             ],
             [
                 $this->modelName,
@@ -177,7 +180,8 @@ class DcatCommand extends GeneratorCommand
                 $this->indentCodes($this->generator->generateShow()),
                 $this->indentCodes($this->generator->generateForm()),
                 //$this->getRepositories()
-                'App\Admin\Repositories\\'.class_basename($this->modelName)
+                'App\Admin\Repositories\\'.class_basename($this->modelName),
+                lcfirst(str_replace('Controller','',$controllerName))
             ],
             $stub
         );
