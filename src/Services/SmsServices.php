@@ -14,15 +14,24 @@ use AlibabaCloud\Client\Exception\ServerException;
 use Wang\Pkg\Lib\Response;
 use App\Models\Codelist;
 use Wang\Pkg\Lib\Request;
+
 //composer require "alibabacloud/sdk"
 class SmsServices
 {
 
     //Wang\Pkg\Services\SmsServices::check(13917645030,888888);
-    public static function check($phone,$code){
-        $obj = Codelist::where("phone",$phone)->orderBy('updated_at', 'desc')->first();
+    public static function check($phone, $code)
+    {
+        if (env('WHITE_PHONE')) {
+            $whitelist = explode(',', env('WHITE_PHONE'));
+            if (!in_array($phone, $whitelist)) {
+                return true;
+            }
+        }
+
+        $obj = Codelist::where("phone", $phone)->orderBy('updated_at', 'desc')->first();
         if (!$obj || $code != $obj->code) {
-            Response::halt([],201,"验证码错误");
+            Response::halt([], 201, "验证码错误");
         }
 
         $codetime = strtotime($obj->updated_at);
@@ -30,16 +39,8 @@ class SmsServices
 
         $cday = $codetime + 120;
         if ($cday < $time) {
-            if(env('WHITE_PHONE')){
-                $whitelist = explode(',',env('WHITE_PHONE'));
-            }else{
-                $whitelist = [];
-            }
-
-            if (!in_array($phone, $whitelist)) {
-                if(!in_array(env('APP_ENV',''),['dev','local'])){
-                    Response::halt([],202,"验证码已过期");
-                }
+            if (!in_array(env('APP_ENV', ''), ['dev', 'local'])) {
+                Response::halt([], 202, "验证码已过期");
             }
         }
 
@@ -57,7 +58,7 @@ class SmsServices
     {
         $code = mt_rand(100000, 999999);
 
-        if (in_array(env('APP_ENV', ''),['dev','local'])) {
+        if (in_array(env('APP_ENV', ''), ['dev', 'local'])) {
             $code = 888888;
         }
 
@@ -65,7 +66,7 @@ class SmsServices
 
         $count = Codelist::where('ip', $ip)->whereBetween('created_at', [date("Y-m-d H:i:s", strtotime("-12 hour")), date("Y-m-d H:i:s")])->count();
 
-        if(!in_array(env('APP_ENV', ''),['dev','local'])){
+        if (!in_array(env('APP_ENV', ''), ['dev', 'local'])) {
             if ($count > 4) {
                 Response::halt([], 201, "获取次数超出限制");
             }
@@ -93,7 +94,7 @@ class SmsServices
 
         $TemplateCode = env("TEMPLATE_CODE");
 
-        $regionId = env('REGION_ID','cn-hangzhou');
+        $regionId = env('REGION_ID', 'cn-hangzhou');
 
         // Download：https://github.com/aliyun/openapi-sdk-php
         // Usage：https://github.com/aliyun/openapi-sdk-php/blob/master/README.md
