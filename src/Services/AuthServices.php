@@ -23,6 +23,17 @@ class AuthServices
         return $this->loginField;
     }
 
+    protected function user($token = '')
+    {
+
+        $uid = $this->fastGetUid($token);
+
+        if ($uid) {
+            return $this->model::find($uid, $this->loginField);
+        }
+        return false;
+    }
+
     protected function fastGetUser($token = '')
     {
 
