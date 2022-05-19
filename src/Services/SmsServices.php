@@ -82,6 +82,9 @@ class SmsServices
         /*        if (env('APP_ENV', '') == 'dev' || env('APP_ENV', '') == 'local') {
                     return "OK";
                 }*/
+        if (in_array(env('APP_ENV', ''), ['dev', 'local'])) {
+            return "dev send ok!";
+        }
 
         return self::AliSend($phone, $code, $tag);
     }
