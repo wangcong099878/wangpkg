@@ -30,7 +30,12 @@ class SmsServices
 
         $cday = $codetime + 120;
         if ($cday < $time) {
-            $whitelist = config('app.white_list',[]);
+            if(env('WHITE_PHONE')){
+                $whitelist = explode(',',env('WHITE_PHONE'));
+            }else{
+                $whitelist = [];
+            }
+
             if (!in_array($phone, $whitelist)) {
                 if(!in_array(env('APP_ENV',''),['dev','local'])){
                     Response::halt([],202,"验证码已过期");
