@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Http\Request;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
+//http://localhost:8000/tp/index
+Route::group(['prefix' => 'DummyPrefix', 'namespace' => 'DummyDXName'], function () {
+    Route::any('index', 'DummyDXNameController@index');
+});
+
+Route::group(['namespace' => 'DummyPrefix', 'middleware' => App\Http\Middleware\DummyDXNameAuth::class], function () {
+
+});
+
+
+
+
+
+
+
+
+
+
+Route::group(['prefix' => 'media','namespace' => 'Api'], function () {
+    //Route::any('duoyou', 'AccessMultipleController@duoyou');
+    Route::any('login', 'MediaUserController@login');
+
+
+
+});
+
+Route::group(['prefix' => 'media','namespace' => 'Api', 'middleware' => App\Http\Middleware\MediaUserAuth::class], function () {
+
+    Route::any('userinfo', 'MediaUserController@userinfo');
+});

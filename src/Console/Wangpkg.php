@@ -78,6 +78,19 @@ class Wangpkg extends Command
 
     }
 
+    //php artisan wangpkg initApp
+    public function initApp()
+    {
+        $file = new \Illuminate\Filesystem\Filesystem();
+        $text = $file->get(__DIR__ . "/app/config/app.stub");
+        $this->files->put(config_path('app.php'), $text);
+
+        $text = $file->get(__DIR__ . "/app/config/filesystems.stub");
+        $this->files->put(config_path('filesystems.php'), $text);
+
+        //
+    }
+
     public function createModel($tabName)
     {
         ManageDB::addModel($tabName, true, true);
