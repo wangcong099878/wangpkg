@@ -10,9 +10,10 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::group(['prefix' => 'api/wangpkg', 'namespace' => 'Wang\Pkg\Http\Controllers'], function () {
-    Route::post('version', 'PublicController@version');
-    Route::post('sendSms', 'PublicController@sendSms');
+    Route::any('version', 'PublicController@version');
+    Route::any('sendSms', 'PublicController@sendSms');
     Route::any('getConfig', 'PublicController@getConfig');
 });
 
