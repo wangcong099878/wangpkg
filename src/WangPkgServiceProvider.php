@@ -65,6 +65,7 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\ActionCommand::class,
                 Console\ActionJsCommand::class,
                 Console\ActionModalCommand::class,
+                Console\ToolBatchCommand::class,
                 Console\AppCommand::class,
                 Console\MakeTab::class,
                 Console\RunSHS::class,

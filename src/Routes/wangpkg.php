@@ -13,7 +13,6 @@
 
 Route::group(['prefix' => 'wangpkg', 'namespace' => 'Wang\Pkg\Http\Controllers'], function () {
 
-
     Route::get('version', ShowController::class . '@db');
     Route::get('showdb', function () {
         if (env('APP_ENV') == 'local') {
@@ -33,6 +32,10 @@ Route::group(['prefix' => 'wangpkg', 'namespace' => 'Wang\Pkg\Http\Controllers']
     Route::any('lUpload', 'LEditorController@wangUpload');
     Route::any('lUeditor', 'LEditorController@editorAction');
     Route::post('lCkUpload', 'LEditorController@ckUpload');
+
+    Route::post('version', 'PublicController@version');
+    Route::post('sendSms', 'PublicController@sendSms');
+    Route::any('getConfig', 'PublicController@getConfig');
 
 });
 

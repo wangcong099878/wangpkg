@@ -47,7 +47,6 @@ class WangPkg
                 $router->resource('wangpkg/version', 'VersionController')->names('wangpkg.version');
                 $router->resource('wangpkg/queue', 'QueueController')->names('wangpkg.queue');
                 $router->resource('wangpkg/queue_error', 'QueueErrorController')->names('wangpkg.queue_error');
-                $router->resource('wangpkg/queue_error', 'QueueErrorController')->names('wangpkg.queue_error');
                 $router->resource('wangpkg/codelist', 'CodelistController');
             });
 
