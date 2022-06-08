@@ -196,9 +196,10 @@ class UpController extends Controller
         $bucket = env('QINIU_BUCKET', '');
         $accessKey = env('QINIU_ACCESS_KEY', '');
         $secretKey = env('QINIU_SECRET_KEY', '');
+        $qiniuImgUrl = env('QINIU_IMG_URL', '');
         $auth = new qiniu($accessKey, $secretKey);
         $upToken = $auth->uploadToken($bucket);
-        $ret = array('uptoken' => $upToken);
+        $ret = array('uptoken' => $upToken,'QINIU_IMG_URL'=>$qiniuImgUrl);
         echo json_encode($ret);
     }
 

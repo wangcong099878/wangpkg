@@ -102,7 +102,7 @@
     var xhr;
     var ot;//
     var oloaded;
-
+    var QINIU_IMG_URL;
     // 转换为二进制对象
     function dataURLtoBlob(dataurl) {
         var arr = dataurl.split(','),
@@ -165,6 +165,9 @@
                     if (typeof (response) == 'string') {
                         response = JSON.parse(response);
                     }
+
+                    QINIU_IMG_URL = response.QINIU_IMG_URL;
+
                     var putExtra = {
                         fname: "",
                         params: {},
@@ -192,7 +195,7 @@
                         },
                         complete: function (res) {
                             // 图片地址
-                            var images = res.key;
+                            var images = QINIU_IMG_URL+res.key;
                             addVersion(images);
                             console.log(res);
                             //这里处理
