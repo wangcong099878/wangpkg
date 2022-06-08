@@ -54,6 +54,10 @@ class DummyClass extends AdminController
             });
 
             $grid->filter(function (Grid\Filter $filter) {
+                // 展开过滤器
+                $filter->expand(false);
+                // 更改为 panel 布局
+                //$filter->panel();
                 $filter->equal('id');
 
             });

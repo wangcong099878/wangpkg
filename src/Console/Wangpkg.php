@@ -17,13 +17,16 @@ use Wang\Pkg\Services\SwooleServices;
 
 class Wangpkg extends Command
 {
+
+    use Tools;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'wangpkg {action?} {param?} {param1?} {param2?}';
-
+    protected $signature = 'wangpkg {action?} {param?} {param1?} {param2?} {param3?}';
+    public $files = null;
     /**
      * The console command description.
      *
@@ -38,6 +41,7 @@ class Wangpkg extends Command
      */
     public function __construct()
     {
+        $this->files = new \Illuminate\Filesystem\Filesystem();
         parent::__construct();
     }
 
@@ -77,6 +81,29 @@ class Wangpkg extends Command
         }
 
     }
+
+    //php artisan wangpkg make App\\Admin\\Actions\\ActionForm stubName title;
+    //php artisan wangpkg make App\\Admin\\Actions\\ActionForm stubName title;
+    public function make()
+    {
+        $className = $this->argument('param');
+        $stub = $this->argument('param1');
+        $title = $this->argument('param2');
+        // echo 123466;
+        $data = explode('\\', $className);
+        print_r(end($data));
+        //计算命名空间
+        //获取类名
+
+        $this->checkDir($className);
+
+    }
+
+    public function getPath()
+    {
+        //app_path("{$this->prefixCapital}Admin/" . $file);
+    }
+
 
     //php artisan wangpkg initApp
     public function initApp()
