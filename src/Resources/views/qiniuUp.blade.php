@@ -140,8 +140,13 @@
         };
         oBox.ondrop = function (ev) {
             var oFile = ev.dataTransfer.files[0];
-            var ret = {};
-            ret.base64Data = ev.target.result;
+            //console.log(ev.dataTransfer);
+            //var ret = {};
+            //ret.base64Data = ev.target.result;
+
+
+
+
 
             /*            if (typeof (files[0]) == "undefined" || files[0].size <= 0) {
                             alert("请选择图片");
@@ -177,7 +182,8 @@
                             //res.total.total
                             //上传进度百分比
                             //res.total.percent
-                            qiniuProgressFunction(res.total);
+
+                            //qiniuProgressFunction(res.total);
                             console.log(JSON.stringify(res));  //上传图片进度    进度条
                         },
                         error: function (err) {
@@ -230,8 +236,25 @@
                         ot = new Date().getTime(); //设置上传开始时间
                         oloaded = 0;//设置上传开始时，以上传的文件大小为0
 
-                        var observable = qiniu.upload(dataURLtoBlob(ret.base64Data), filename, response.uptoken, putExtra, config);
+                        //console.log(ret.base64Data);
+                        var observable = qiniu.upload(oFile, filename, response.uptoken, putExtra, config);
                         subscription = observable.subscribe(observer);
+
+                        // 1.读取 创建对象
+/*                        let reader = new FileReader();
+                        // 2 读取成base 64格式
+                        reader.readAsDataURL(ev.dataTransfer.files[0]);
+                        reader.addEventListener("load", function () {
+                            // console.log(this.result);
+       /!*                     let img = document.createElement("img");
+                            // 设置 img
+                            div.appendChild(img);*!/
+                            //img.src = this.result;
+                            let base64 = this.result;
+                            var observable = qiniu.upload(dataURLtoBlob(ret.base64Data), filename, response.uptoken, putExtra, config);
+                            subscription = observable.subscribe(observer);
+                        });*/
+
                     } else {
                         alert("获取token失败");
                     }
@@ -381,9 +404,14 @@
         var percentageDiv = document.getElementById("percentage");
         var percentage = 0;
 
-        progressBar.max = evt.total;
-        progressBar.value = evt.loaded;
-        var percentage = Math.round(evt.loaded / evt.total * 100);
+        //这个提供的double值是一个无限的小数。 此时你可以使用Math.floor（）向下取整 ，或者Math.ceil（）向上取整
+
+        let total = Math.floor(evt.total);
+        let loaded = Math.floor(evt.loaded);
+
+        progressBar.max = total;
+        progressBar.value = loaded;
+        var percentage = Math.round(loaded / total * 100);
 
         percentageDiv.innerHTML = percentage + "%";
 
@@ -393,8 +421,8 @@
         var pertime = (nt - ot) / 1000; //计算出上次调用该方法时到现在的时间差，单位为s
         ot = new Date().getTime(); //重新赋值时间，用于下次计算
 
-        var perload = evt.loaded - oloaded; //计算该分段上传的文件大小，单位b
-        oloaded = evt.loaded;//重新赋值已上传文件大小，用以下次计算
+        var perload = loaded - oloaded; //计算该分段上传的文件大小，单位b
+        oloaded = loaded;//重新赋值已上传文件大小，用以下次计算
 
         //上传速度计算
         var speed = perload / pertime;//单位b/s
@@ -410,7 +438,7 @@
         }
         speed = speed.toFixed(1);
         //剩余时间
-        var resttime = ((evt.total - evt.loaded) / bspeed).toFixed(1);
+        var resttime = ((total - loaded) / bspeed).toFixed(1);
         time.innerHTML = '，速度：' + speed + units + '，剩余时间：' + resttime + 's';
         if (bspeed == 0) {
             time.innerHTML = '上传已取消';
