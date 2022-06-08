@@ -140,6 +140,8 @@
         };
         oBox.ondrop = function (ev) {
             var oFile = ev.dataTransfer.files[0];
+            var ret = {};
+            ret.base64Data = ev.target.result;
 
             /*            if (typeof (files[0]) == "undefined" || files[0].size <= 0) {
                             alert("请选择图片");
