@@ -1,5 +1,12 @@
 <?php
 
+if (!function_exists('select_all_insert')) {
+    function select_all_insert($arr){
+        $r = [''=>'全部'];
+        return $r+$arr;
+    }
+}
+
 if (!function_exists('mobile_request')) {
     function mobile_request()
     {
