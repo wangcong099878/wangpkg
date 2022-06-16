@@ -56,8 +56,8 @@ class Base
 
         if ($validator->fails()) {
             $keys = $validator->errors()->keys();
-            //return Response::swoole([], 2002, $validator->errors()->first(), ['param' => $keys[0]]);
-            throw new ApiException([],2002,$validator->errors()->first(),['param' => $keys[0]]);
+            Response::halt([], 2002, $validator->errors()->first(), ['param' => $keys[0]]);
+            //throw new ApiException([],2002,$validator->errors()->first(),['param' => $keys[0]]);
         }
 
         return request($key,"");

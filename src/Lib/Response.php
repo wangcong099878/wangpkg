@@ -201,27 +201,11 @@ class Response
             $message = '请求成功';
         }
 
-        /*        if (isset($_SERVER['HTTP_OS']) && $_SERVER['HTTP_OS'] == 'android') {
-
-                    if ($data == []) {
-                        $data = null;
-                    } else {
-                        if (!$data) {
-                            $data = null;
-                        }
-                    }
-                }*/
-
         $result = [
             'err' => $errorCode,
             'message' => $message,
             'data' => $data
         ];
-
-        /*        $options['new_token'] = '';
-                if (isset($_REQUEST['new_token'])) {
-                    $options['new_token'] = $_REQUEST['new_token'];
-                }*/
 
         $result = array_merge($options, $result);
 
