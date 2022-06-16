@@ -7,10 +7,8 @@ class ApiException extends \Exception
 {
     function __construct($data = null, $errorCode = 0, $message = "", $options = [])
     {
-        $this->data = $data;
-        $this->err = $errorCode;
-        $this->message = $message;
-        $this->options = $options;
+        $this->errorMsg = $message;
+        $this->errorCode = $errorCode;
         parent::__construct($message);
     }
 }
