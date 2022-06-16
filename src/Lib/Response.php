@@ -198,7 +198,7 @@ class Response
     {
         //\header('Content-Type: application/json; charset=utf-8');
         if (!$message) {
-            $message = self::$map[$errorCode];
+            $message = '请求成功';
         }
 
         /*        if (isset($_SERVER['HTTP_OS']) && $_SERVER['HTTP_OS'] == 'android') {

@@ -56,7 +56,7 @@ class Base
 
         if ($validator->fails()) {
             $keys = $validator->errors()->keys();
-            Response::halt([], 2002, $validator->errors()->first(), ['param' => $keys[0]]);
+            return Response::swoole([], 2002, $validator->errors()->first(), ['param' => $keys[0]]);
         }
 
         return isset($_REQUEST[$key]) ? $_REQUEST[$key] : "";
