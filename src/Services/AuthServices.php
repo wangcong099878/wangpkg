@@ -67,7 +67,7 @@ class AuthServices
             return isset($payload['sub']) ? $payload['sub'] : false;
         }
 
-        $http_auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : "";
+        $http_auth = request()->header('authorization') ? request()->header('authorization') : "";
         $eTag = explode(' ', $http_auth);
         if (isset($eTag[0]) && $eTag[0] == 'bearer' && isset($eTag[1])) {
             $token = $eTag[1];
@@ -113,7 +113,7 @@ class AuthServices
             return isset($payload['sub']) ? $payload['sub'] : false;
         }
 
-        $http_auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : "";
+        $http_auth = request()->header('authorization') ? request()->header('authorization') : "";
         $eTag = explode(' ', $http_auth);
         if (isset($eTag[0]) && $eTag[0] == 'bearer' && isset($eTag[1])) {
             $token = $eTag[1];
@@ -143,7 +143,7 @@ class AuthServices
             return $token;
         }
 
-        $http_auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : "";
+        $http_auth = request()->header('authorization') ? request()->header('authorization') : "";
 
         $eTag = explode(' ', $http_auth);
         if (isset($eTag[0]) && $eTag[0] == 'bearer' && isset($eTag[1])) {
@@ -177,7 +177,7 @@ class AuthServices
             return isset($payload['sub']) ? $payload['sub'] : false;
         }
 
-        $http_auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : "";
+        $http_auth = request()->header('authorization') ? request()->header('authorization') : "";
 
         $eTag = explode(' ', $http_auth);
         if (isset($eTag[0]) && $eTag[0] == 'bearer' && isset($eTag[1])) {
