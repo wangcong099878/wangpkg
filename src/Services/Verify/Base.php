@@ -30,7 +30,7 @@ class Base
     protected function make($key, $rules = "", array $messages = [])
     {
         $this->boot();
-
+        $_REQUEST = request()->toArray();
 
         if ($rules == "") {
             if (isset($this->rule[$key]['rules'])) {
@@ -60,7 +60,8 @@ class Base
             throw new ApiException([],2002,$validator->errors()->first(),['param' => $keys[0]]);
         }
 
-        return isset($_REQUEST[$key]) ? $_REQUEST[$key] : "";
+        return request($key,"");
+        //return isset($_REQUEST[$key]) ? $_REQUEST[$key] : "";
     }
 
     public function __call($method, $parameters)
