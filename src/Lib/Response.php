@@ -194,7 +194,7 @@ class Response
     }
 
 
-    public static function swoole($data = null, $errorCode = 200, $message = "", $options = [])
+    public static function swoole($data = null, $errorCode = 0, $message = "", $options = [])
     {
         //\header('Content-Type: application/json; charset=utf-8');
         if (!$message) {
