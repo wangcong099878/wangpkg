@@ -194,8 +194,52 @@ class Response
     }
 
 
+    public static function swoole($data = null, $errorCode = 200, $message = "", $options = [])
+    {
+        //\header('Content-Type: application/json; charset=utf-8');
+        if (!$message) {
+            $message = self::$map[$errorCode];
+        }
+
+        /*        if (isset($_SERVER['HTTP_OS']) && $_SERVER['HTTP_OS'] == 'android') {
+
+                    if ($data == []) {
+                        $data = null;
+                    } else {
+                        if (!$data) {
+                            $data = null;
+                        }
+                    }
+                }*/
+
+        $result = [
+            'err' => $errorCode,
+            'message' => $message,
+            'data' => $data
+        ];
+
+        /*        $options['new_token'] = '';
+                if (isset($_REQUEST['new_token'])) {
+                    $options['new_token'] = $_REQUEST['new_token'];
+                }*/
+
+        $result = array_merge($options, $result);
+
+        if (env('PHP_HTTP_LOG_IS_OPEN')) {
+            //NLog::httpLogSaveToRedis($result, '', 'response');
+        }
+
+        return $result;
+        //$resJson = json_encode($result, JSON_UNESCAPED_UNICODE);
+        //将返回信息记录到redis队列
+
+        //return $resJson;
+    }
+
+
     public static function res($data = null, $errorCode = 200, $message = "", $options = [])
     {
+        \header('Content-Type: application/json; charset=utf-8');
         if (!$message) {
             $message = self::$map[$errorCode];
         }
