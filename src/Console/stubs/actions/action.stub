@@ -1,0 +1,85 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\Admin\Repositories\DummyModelClass;
+use Dcat\Admin\Actions\Response;
+use Dcat\Admin\Grid\RowAction;
+use Dcat\Admin\Traits\HasPermissions;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+
+class DummyClass extends RowAction
+{
+    /**
+     * @return string
+     */
+	protected $title = 'DummyTitle';
+
+    public function test(){
+        /*
+        if ($actions->row->state == 2) {
+            $actions->append(new \DummyNamespace\DummyClass());
+        }
+        */
+    }
+    /**
+     * Handle the action request.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function handle(Request $request)
+    {
+        // dump($this->getKey());
+
+        //$model = \App\Models\Article::find($this->getKey());
+
+        //$model->state=3;
+        //$model->up_at=date('Y-m-d H:i:s');
+        //$model->save();
+
+        //$result = pushbaidu(['https://www.zhihuibk.com/p/' . $model->uniqid . '.html']);
+
+        return $this->response()
+            ->success('Processed successfully: ')
+            ->refresh();
+            //->redirect('/');
+    }
+
+    /**
+	 * @return string|array|void
+	 */
+	public function confirm()
+	{
+		// return ['Confirm?', 'contents'];
+		/*
+        return [
+            // 确认弹窗 title
+            "确定上线吗？",
+            // 确认弹窗 content
+            $this->row->uniqid,
+        ];
+        */
+	}
+
+    /**
+     * @param Model|Authenticatable|HasPermissions|null $user
+     *
+     * @return bool
+     */
+    protected function authorize($user): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    protected function parameters()
+    {
+        return [];
+    }
+}

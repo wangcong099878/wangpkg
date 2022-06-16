@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Admin\Controllers\Post;
+
+use Dcat\Admin\Admin;
+use Dcat\Admin\Widgets\Modal;
+use Dcat\Admin\Widgets\Table;
+use Illuminate\Support\Arr;
+
+class info
+{
+    static public function table()
+    {
+/*        Admin::style('.table td{padding: .85rem .55rem}');
+        $data = [
+            ['name' => 'PHP version', 'value' => 'PHP/' . PHP_VERSION],
+            ['name' => 'Laravel version', 'value' => app()->version()],
+            ['name' => 'CGI', 'value' => php_sapi_name()],
+            ['name' => 'Uname', 'value' => php_uname()],
+            ['name' => 'Server', 'value' => Arr::get($_SERVER, 'SERVER_SOFTWARE')],
+            ['name' => 'Cache driver', 'value' => config('cache.default')],
+            ['name' => 'Session driver', 'value' => config('session.driver')],
+        ];
+        return Table::make(['name', 'value'], $data);*/
+    }
+
+
+    static public function test(){
+/*        $grid->column('title', '标题')->display(function () {
+            return Modal::make()
+                ->lg()
+                ->title('弹窗')
+                ->body(info::table())
+                ->button('<button class="btn btn-white"><i class="feather icon-grid"></i> 普通弹窗</button>');
+        });*/
+    }
+}

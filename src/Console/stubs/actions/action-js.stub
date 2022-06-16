@@ -1,0 +1,81 @@
+<?php
+
+namespace DummyNamespace;
+
+use Dcat\Admin\Grid\RowAction;
+
+class DummyClass extends RowAction
+{
+    /**
+     * 返回字段标题
+     *
+     * @return string
+     */
+    public function title()
+    {
+        return 'DummyTitle';
+    }
+
+    public function test(){
+        /*
+        if ($actions->row->state == 2) {
+            $actions->append(new \DummyNamespace\DummyClass());
+        }
+        */
+    }
+
+    /**
+     * 添加JS
+     *
+     * @return string
+     */
+    protected function script()
+    {
+        //js操作参考 https://learnku.com/docs/dcat-admin/2.x/js-component/8087
+        return <<<JS
+$('.grid-check-row').on('click', function () {
+
+    /*
+    var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+    $.post({
+                url: '/admin/test',
+                data: {nginx:1},
+                timeout: 15000,
+                dataType: 'json',
+                headers: headers,
+                success: function (res) {
+                    //callback(res)
+                    //respone(res, param, sender);
+                    //alert(JSON.stringify(res));
+                    console.log(res);
+                },
+                error: function (xhr, type) {
+                    //callback({err: 201, message: xhr, data: []});
+                    //respone(xhr, param, sender);
+                    console.log(xhr);
+                }
+            });
+
+     */
+    // Your code.
+    console.log($(this).data('id'));
+    console.log($(this).data('email'));
+
+});
+JS;
+    }
+
+    public function html()
+    {
+        // 获取当前行数据ID
+        $id = $this->getKey();
+
+        // 获取当前行数据的用户名
+        $username = $this->row->h;
+
+        // 这里需要添加一个class, 和上面script方法对应
+        $this->setHtmlAttribute(['data-id' => $id, 'data-email' => $username, 'class' => 'grid-check-row']);
+
+        return parent::html();
+    }
+}

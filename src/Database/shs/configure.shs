@@ -1,0 +1,8 @@
+
+#configure=配置表
+key,,varchar
+name,,varchar,255,
+value,,varchar,255,
+describe,配置描述,varchar,255,
+state,是否生效?1=不生效&2=生效,tinyint,4,0
+---

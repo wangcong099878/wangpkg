@@ -1,0 +1,90 @@
+<?php
+
+namespace DummyNamespace;
+
+use Dcat\Admin\Grid;
+use Dcat\Admin\Grid\LazyRenderable;
+use \App\Admin\Repositories\DummyModelClass;
+
+
+class DummyModelClassTab extends LazyRenderable
+{
+    public function grid(): Grid
+    {
+        $id = $this->payload['id'];
+        return Grid::make(new DummyModelClass(), function (Grid $grid)use($id) {
+            //$grid->model()->where('universitie_id',$id)->orderBy('year', 'desc');
+
+            $grid->column('id', 'ID')->sortable();
+            //$grid->column('name', '名称');
+            //$grid->column('title', '标题');
+            $grid->column('created_at', '创建时间');
+
+            //$grid->quickSearch(['uniqid']);
+
+            //$grid->tools(new AddTest());
+           // $grid->tools('<button>你好啊</button>');
+
+            $grid->paginate(10);
+            //$grid->disableActions();
+            $grid->setActionClass(\Dcat\Admin\Grid\Displayers\Actions::class);
+
+            $grid->actions(function (Grid\Displayers\Actions $actions)use($id) {
+                $actions->disableDelete();
+                $actions->disableEdit();
+                $actions->disableQuickEdit();
+                $actions->disableView();
+
+                //print_r($this->row);
+                // append一个操作
+                //$actions->append('<a href=""><i class="fa fa-eye"></i></a>');
+                // prepend一个操作
+                //$actions->prepend('<a href=""><i class="fa fa-paper-plane"></i></a>');
+
+            });
+
+            $grid->filter(function (Grid\Filter $filter) {
+                $filter->like('id', 'id')->width(4);
+            });
+        });
+    }
+
+    public function test(){
+        /*
+        //使用说明
+        $grid->column('DummyModelClass','DummyTitle')->display('DummyTitle')->modal(function (Grid\Displayers\Modal $modal) {
+            // 标题
+            $modal->title('DummyTitle');
+
+            // 自定义图标
+            $modal->icon('feather icon-edit');
+
+            // 传递当前行字段值
+            return \DummyNamespace\DummyModelClassTab::make()->payload(['id' => $this->id]);
+        });
+
+        //grid中使用
+        $grid->column('avgMonthCost')->display('异步表单')->modal(function (Grid\Displayers\Modal $modal) {
+            // 标题
+            $modal->title('弹窗标题');
+            // 自定义图标
+            $modal->icon('feather icon-edit');
+            // 传递当前行字段值
+            return \DummyNamespace\DummyModelClassTab::make()->payload(['name' => $this->name]);
+        });
+        //表单使用  单选
+        $form->selectTable('field', 'Select Table')
+            ->title('DummyTitle')  //弹窗名称
+            ->from(\DummyNamespace\DummyModelClassTab::make()) //实例化表单
+            ->model(DummyModelClass::class, 'id', 'name');   //传入model key value
+
+        //多选
+        $form->multipleSelectTable('field', 'Multiple Select Table')
+            ->title('DummyTitle')
+            ->max(4)
+            ->from(\DummyNamespace\DummyModelClassTab::make())
+            ->model(DummyModelClass::class, 'id', 'name');
+
+        */
+    }
+}

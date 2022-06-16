@@ -1,0 +1,98 @@
+<?php
+
+namespace DummyNamespace;
+
+
+use DummyNamespace\DummyClassForm;
+use Dcat\Admin\Actions\Response;
+use Dcat\Admin\Grid\Tools\AbstractTool;
+use Dcat\Admin\Traits\HasPermissions;
+use Dcat\Admin\Widgets\Modal;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+
+class DummyClassBtn extends AbstractTool
+{
+    /**
+     * @return string
+     */
+	protected $title = 'DummyTitle';
+
+    /**
+     * @var string
+     */
+    protected $style = 'btn btn-primary filter-btn-xbsxxqg0 btn-outline';
+
+
+    public function render()
+    {
+        //使用该render方法后  直接进入自定义表单的操作  其他的都不生效
+        //$id = $this->getKey();
+        //$this->key()
+        // 实例化表单类并传递自定义参数
+        //$form = Pass::make()->payload($this->row->toArray());
+        $form = \DummyNamespace\DummyClassForm::make()->payload(['id' => 1]);
+        return Modal::make()
+            ->lg()
+            ->title('DummyTitle')
+            ->body($form)
+            ->button('<a class="'.$this->style.'">DummyTitle</a>');
+    }
+
+
+    public function test(){
+        /*
+            $grid->tools(new \DummyNamespace\DummyClassBtn());
+        */
+    }
+
+
+    /**
+     * Handle the action request.
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function handle(Request $request)
+    {
+        return $this->response()
+            ->success('Processed successfully.')
+            ->redirect('/');
+    }
+
+    /**
+     * @return string|void
+     */
+    protected function href()
+    {
+        // return admin_url('auth/users');
+    }
+
+    /**
+	 * @return string|array|void
+	 */
+	public function confirm()
+	{
+		// return ['Confirm?', 'contents'];
+	}
+
+    /**
+     * @param Model|Authenticatable|HasPermissions|null $user
+     *
+     * @return bool
+     */
+    protected function authorize($user): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    protected function parameters()
+    {
+        return [];
+    }
+}

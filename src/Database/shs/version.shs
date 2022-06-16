@@ -1,0 +1,11 @@
+
+#version=app版本
+apk_url,APK下载地址,varchar,255,
+version_number,版本号,varchar,255,
+version_name,版本名,varchar,255,
+active,状态,int,10,1
+update_content,版本更新内容,text,65535,
+force,是否强制?0=不更新&1=不强制&2=强制,tinyint,4,0
+apk_size,apk大小,bigint:u
+apk_md5,apk文件md5值
+---
