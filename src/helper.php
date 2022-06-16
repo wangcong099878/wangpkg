@@ -1,5 +1,23 @@
 <?php
 
+if(!function_exists('res')){
+    function res($data = null, $errorCode = 0, $message = "", $options = [])
+    {
+        if (!$message) {
+            $message = '请求成功';
+        }
+
+        $result = [
+            'err' => $errorCode,
+            'message' => $message,
+            'data' => $data
+        ];
+
+        $result = array_merge($options, $result);
+        return $result;
+    }
+}
+
 if (!function_exists('select_all_insert')) {
     function select_all_insert($arr){
         $r = [''=>'全部'];
