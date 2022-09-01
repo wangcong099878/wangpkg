@@ -22,8 +22,6 @@ Route::group(['prefix' => 'wangpkg', 'namespace' => 'Wang\Pkg\Http\Controllers']
 
     Route::get('version', ShowController::class . '@db');
     Route::get('showdb', function () {
-        echo 123456;
-
         if (env('APP_ENV') == 'local') {
             Wang\Pkg\Lib\ShowDB::show();
         }
