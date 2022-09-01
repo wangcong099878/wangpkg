@@ -210,7 +210,8 @@ class AppCommand extends GeneratorCommand
         $this->info("php artisan migrate --path=database/{$this->prefix}_admin");
         $this->info("config/admin.php中添加      'multi_app' => ['{$this->prefix}-admin' => true,],  ");
         $this->info("app/Providers/RouteServiceProvider.php中添加：");
-        $this->info("Route::middleware('api')->namespace(\$this->namespace)->group(base_path('routes/{$this->prefix}.php'));");
+        //$this->info("Route::middleware('api')->namespace(\$this->namespace)->group(base_path('routes/{$this->prefix}.php'));");
+        $this->info("Route::prefix('{$this->prefix}api')->namespace('App\Http\Controllers')->group(base_path('routes/{$this->prefix}.php'));");
         $this->info("php artisan {$this->prefix}command initAdmin");
         $this->info('created successfully.');
 

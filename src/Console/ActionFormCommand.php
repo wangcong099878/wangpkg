@@ -11,7 +11,7 @@ class ActionFormCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'wangpkg:aForm {classname?} {textname?}';
+    protected $signature = 'wangpkg:aForm {classname?} {textname?} {ipath?}';
 
     /**
      * The console command description.
@@ -53,6 +53,7 @@ class ActionFormCommand extends GeneratorCommand
         $actiontype = 'action-form';
         $classname = $this->argument('classname');
         $textname = $this->argument('textname');
+        $ipath = $this->argument('ipath');
 
         // echo 123456;
         $this->choice = $actiontype;
@@ -71,6 +72,12 @@ class ActionFormCommand extends GeneratorCommand
             $this->error($this->type . ' already exists!');
             return false;
         }
+
+/*        print_r($this->getNameInput());
+        echo "\n";
+        print_r($path);
+
+        exit;*/
 
         $this->makeDirectory($path);
         //写入文件

@@ -60,7 +60,28 @@ $('.grid-check-row').on('click', function () {
     // Your code.
     console.log($(this).data('id'));
     console.log($(this).data('email'));
+/*    Dcat.success('更新成功', '我是标题');
+    Dcat.success('更新成功', null, {
+        timeOut: 5000, // 5秒后自动消失
+    });
+    // 使用标题
+    Dcat.error('服务器出现未知错误', '我是标题');
 
+    // 传递参数
+    Dcat.error('服务器出现未知错误', null, {
+        timeOut: 5000, // 5秒后自动消失
+    });
+    Dcat.swal.success('标题');
+
+    Dcat.swal.success('标题', '内容');
+
+    Dcat.swal.success('标题', '内容', {
+
+    });
+
+    setTimeout(function () {
+            Dcat.reload();
+        }, 1000);*/
 });
 JS;
     }

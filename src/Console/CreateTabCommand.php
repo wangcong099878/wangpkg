@@ -105,7 +105,8 @@ class CreateTabCommand extends GeneratorCommand
     protected function replaceClass($stub, $name)
     {
         $stub = parent::replaceClass($stub, $name);
-
+        $arr = explode('\\',$this->className);
+        $DummyName = end($arr);
         return str_replace(
             [
                 'DummyName',
@@ -113,8 +114,8 @@ class CreateTabCommand extends GeneratorCommand
                 'DummyTitle',
             ],
             [
-                $this->className,
-                $this->className,
+                $DummyName,
+                $DummyName,
                 $this->textName,
             ],
             $stub

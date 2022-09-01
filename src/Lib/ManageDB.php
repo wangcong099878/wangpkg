@@ -440,6 +440,7 @@ ABC;
 
 namespace App\Models;
 
+use \Wang\Pkg\Lib\Model;
 //use Illuminate\Database\Eloquent\Model;
 
 class $modelName extends Model

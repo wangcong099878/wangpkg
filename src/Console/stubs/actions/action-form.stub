@@ -80,8 +80,8 @@ class DummyClassForm extends Form implements LazyRenderable
         $id = $this->payload['id'] ?? null;
 
         return [
-            'name'  => 'John Doe',
-            'email' => 'John.Doe@gmail.com',
+            'name'  => '',
+            'email' => '',
         ];
     }
 }

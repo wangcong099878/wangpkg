@@ -82,9 +82,11 @@ class ActionTabCommand extends GeneratorCommand
         $this->info($this->type . ' created successfully.');
 
 
-        //生成form类
+        //生成表单类
         $name = $this->qualifyClass($this->getNameInput());
 
+
+        //print_r($name);exit;
         $path = $this->getPath($name . 'Tab');
 
         //强制覆盖
@@ -130,6 +132,16 @@ class ActionTabCommand extends GeneratorCommand
     {
         $stub = parent::replaceClass($stub, $name);
 
+        $arr = explode('\\',$this->className);
+        $DummyName = end($arr);
+/*        if(count($arr)>1){
+
+        }else{
+
+        }*/
+
+/*        print_r($arr);
+        exit;*/
         return str_replace(
             [
                 'DummyName',
@@ -137,8 +149,8 @@ class ActionTabCommand extends GeneratorCommand
                 'DummyTitle',
             ],
             [
-                $this->className,
-                $this->className,
+                $DummyName,
+                $DummyName,
                 $this->textName,
             ],
             $stub

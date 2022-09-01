@@ -12,12 +12,12 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//http://localhost:8000/tp/index
-Route::group(['prefix' => 'DummyPrefix', 'namespace' => 'DummyDXName'], function () {
+//http://localhost:8000/DummyPrefixapi/index
+Route::group(['namespace' => 'DummyDXName'], function () {
     Route::any('index', 'DummyDXNameController@index');
 });
 
-Route::group(['namespace' => 'DummyPrefix', 'middleware' => App\Http\Middleware\DummyDXNameAuth::class], function () {
+Route::group(['namespace' => 'DummyDXName', 'middleware' => App\Http\Middleware\DummyDXNameAuth::class], function () {
 
 });
 
