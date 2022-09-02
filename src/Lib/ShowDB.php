@@ -200,7 +200,7 @@ class ShowDB
                 }
             }
             $str.="\n";
-            $str.="\$obj->save();\n";
+            $str.="if(\$obj->save()){\n\n}else{\n\n}\n";
 
 
             $html .= '<tbody><tr><th>字段名</th><th>数据类型</th><th>默认值</th>
