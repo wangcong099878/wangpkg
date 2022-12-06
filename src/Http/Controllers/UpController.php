@@ -35,29 +35,29 @@ class UpController extends Controller
     public function aliyunUp()
     {
         if (isset($_FILES['file']['tmp_name'])) {
-            $user = Auth::getUserTab();
             $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
             $key = uniqid() . '.' . $ext;
 
             $accessKeyId = env('ALiYUN_ACCESS_KEY_ID');
-            $accessKeySecret = env('ACCESS_KEY_SECRET');
+            $accessKeySecret = env('ALiYUN_ACCESS_KEY_SECRET');
 
-            $imgUrl = env('QINIU_IMG_URL', '');
+            $imgUrl = env('ALiYUN_SITE', '');
 
-            $endpoint = "oss-cn-beijing.aliyuncs.com";
-            $bucket = "wbwan";
+            $endpoint = env('ALiYUN_ENDPOINT', '');
+            $bucket = env('ALiYUN_BUCKET', '');
             try {
                 $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-                $filePath = "/Users/wangcong/php/juejin/wbwan_backend/public/imgs/home.jpg";
-                $ossClient->uploadFile($bucket, $key, $_FILES['file']['tmp_name']);
+                //$filePath = "/Users/wangcong/php/juejin/wbwan_backend/public/imgs/home.jpg";
+                $result = $ossClient->uploadFile($bucket, $key, $_FILES['file']['tmp_name']);
 
                 //https://wbwan.oss-cn-beijing.aliyuncs.com/test.png
                 Response::halt([
                     'domain' => '//wbwan.oss-cn-beijing.aliyuncs.com/',
                     'key' => $key,
-                    'filepath' => 'https://wbwan.oss-cn-beijing.aliyuncs.com/' . $key
-                ], 200);
+                    'filepath' => $imgUrl . $key,
+                    'resule'=>$result
+                ], 0);
 
             } catch (OssException $e) {
                 Response::halt([], 10001, $e->getMessage());
@@ -67,6 +67,7 @@ class UpController extends Controller
                 'baseUrl' => $imgUrl,
                 'filename' => $key,
                 'filepath' => $imgUrl . $key,
+                'resule'=>$result
             ],0,"上传图片成功");
         } else {
             Response::halt([],400,'上传格式不正确');
@@ -78,7 +79,6 @@ class UpController extends Controller
     public function upimg()
     {
         if (isset($_FILES['file']['tmp_name'])) {
-            $user = Auth::getUserTab();
             // 用于签名的公钥和私钥
             $bucket = env('QINIU_BUCKET', '');
             $accessKey = env('QINIU_ACCESS_KEY', '');

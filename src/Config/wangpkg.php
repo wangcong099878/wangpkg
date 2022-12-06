@@ -32,7 +32,7 @@ return [
         'imageCompressEnable' => true,
         'imageCompressBorder' => 1600,
         'imageInsertAlign' => 'none',
-        'imageUrlPrefix' => '//imgs.1jiedan.com/',
+        'imageUrlPrefix' => '//imgs.test.com/',
         'imagePathFormat' => '/storage/upload/{yyyy}{mm}{dd}/{time}{rand:6}',
         'scrawlActionName' => 'uploadscrawl',
         'scrawlFieldName' => 'upfile',

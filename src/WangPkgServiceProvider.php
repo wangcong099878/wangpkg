@@ -73,6 +73,7 @@ class WangPkgServiceProvider extends ServiceProvider
                 Console\SwooleQueue::class,
                 Console\NormalQueue::class,
                 Console\TryAgain::class,
+                Console\ControllerMakeCommand::class,
                 //BarCommand::class,
             ]);
         }
