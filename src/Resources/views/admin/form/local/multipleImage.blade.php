@@ -223,9 +223,9 @@
     //图片上传
     $('#wangUpload{{$id}}').on('change', function (e) {
         var imgSize = this.files[0].size;
-        if (imgSize > 1024 * 500 * 1) { //1M
+/*        if (imgSize > 1024 * 500 * 1) { //1M
             return alert("上传图片不能超过500KB");
-        }
+        }*/
 
         if (this.files[0].type != 'image/png' && this.files[0].type != 'image/jpeg' && this.files[0].type != 'image/gif') {
             return alert("图片上传格式不正确");
