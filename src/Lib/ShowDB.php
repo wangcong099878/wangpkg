@@ -173,6 +173,36 @@ class ShowDB
 // $html .= '<p><h2>'. $v['TABLE_COMMENT'] . '&nbsp;</h2>';
             $html .= '<table  border="1" cellspacing="0" cellpadding="0" align="center">';
             $html .= '<caption>' . $v ['TABLE_NAME'] . '  ' . $v ['TABLE_COMMENT'] . '</caption>';
+
+
+            //代码生成
+            $tabName = ucfirst(\Wang\Pkg\Lib\ManageDB::camelize($v ['TABLE_NAME']));
+            $str = '';
+            foreach ($v ['COLUMN'] as $f) {
+                if($f['COLUMN_NAME']!='created_at' && $f['COLUMN_NAME']!='updated_at' && $f['COLUMN_NAME']!='id'){
+                    $str .= "\${$f ['COLUMN_NAME']}=\\request('{$f ['COLUMN_NAME']}');\n";
+                }
+            }
+            $str .= "\n";
+            $str .= "\$data=[\n";
+            foreach ($v ['COLUMN'] as $f) {
+                if($f['COLUMN_NAME']!='created_at' && $f['COLUMN_NAME']!='updated_at' && $f['COLUMN_NAME']!='id'){
+                    $str .= "'{$f ['COLUMN_NAME']}'=>\${$f ['COLUMN_NAME']},\n";
+                }
+            }
+            $str.="];\n";
+            $str.="{$tabName}::create(\$data);\n";
+            $str .= "\n";
+            $str .= "\$obj = new {$tabName}();\n";
+            foreach ($v ['COLUMN'] as $f) {
+                if($f['COLUMN_NAME']!='created_at' && $f['COLUMN_NAME']!='updated_at' && $f['COLUMN_NAME']!='id'){
+                    $str .= "\$obj->{$f ['COLUMN_NAME']}=\${$f ['COLUMN_NAME']};\n";
+                }
+            }
+            $str.="\n";
+            $str.="if(\$obj->save()){\n\n}else{\n\n}\n";
+
+
             $html .= '<tbody><tr><th>字段名</th><th>数据类型</th><th>默认值</th>
     <th>允许非空</th>
     <th>自动递增</th><th>备注</th></tr>';
@@ -187,7 +217,9 @@ class ShowDB
                 $html .= '<td class="c6">&nbsp;' . $f ['COLUMN_COMMENT'] . '</td>';
                 $html .= '</tr>';
             }
-            $html .= '</tbody></table></p>';
+            $html .= '</tbody></table>';
+            $html .= '<div style="width: 880px;margin: 0 auto"><pre style="width: 100%;height: auto;">' . $str . '</pre></div>';
+            $html .='</p>';
         }
 
 // 输出

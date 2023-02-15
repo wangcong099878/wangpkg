@@ -34,7 +34,6 @@ trait Tools
 
     protected function checkDir($classPath){
         //根据类名目录获取文件夹路径 与文件类名
-        echo 1234567;
         //判断目录是否存在  并创建目录
         $dir = $classPath;
 
