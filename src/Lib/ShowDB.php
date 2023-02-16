@@ -214,7 +214,7 @@ ABC;
 
             $str.=$resStr;
 
-
+            $str.="\n\n";
 
             $str.="php artisan wangpkg:dmake {$tabName}Controller --model=App\\\\Models\\\\{$tabName} --title={$v ['TABLE_COMMENT']}\n";
 
