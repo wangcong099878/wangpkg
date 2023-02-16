@@ -8,6 +8,8 @@
 
 namespace Wang\Pkg\Lib;
 
+use SebastianBergmann\Diff\Output\AbstractChunkOutputBuilder;
+
 class ShowDB
 {
 
@@ -192,6 +194,7 @@ class ShowDB
             }
             $str.="];\n";
             $str.="{$tabName}::create(\$data);\n";
+            $str.="if({$tabName}::where(\$data)->exists()){Response::halt([],201,'已存在');}\n";
             $str .= "\n";
             $str .= "\$obj = new {$tabName}();\n";
             foreach ($v ['COLUMN'] as $f) {
@@ -200,7 +203,19 @@ class ShowDB
                 }
             }
             $str.="\n";
-            $str.="if(\$obj->save()){\n\n}else{\n\n}\n";
+            //$str.="if(\$obj->save()){\n\n}else{\n\n}\n";
+            $resStr = <<<ABC
+if(\$obj->save()){
+    Response::halt([],0,'请求成功');
+}else{
+    Response::halt([],201,'请求失败');
+}
+ABC;
+
+            $str.=$resStr;
+
+            $str.="\n\n";
+
             $str.="php artisan wangpkg:dmake {$tabName}Controller --model=App\\\\Models\\\\{$tabName} --title={$v ['TABLE_COMMENT']}\n";
 
 
@@ -219,7 +234,7 @@ class ShowDB
                 $html .= '</tr>';
             }
             $html .= '</tbody></table>';
-$html .= '<div style="width: 880px;margin: 0 auto"><pre style="width: 100%;height: auto;">' . $str . '</pre></div>';
+            $html .= '<div style="width: 880px;margin: 0 auto"><pre style="width: 100%;height: auto;">' . $str . '</pre></div>';
             $html .='</p>';
         }
 
