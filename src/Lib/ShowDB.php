@@ -205,11 +205,11 @@ class ShowDB
             $str.="\n";
             //$str.="if(\$obj->save()){\n\n}else{\n\n}\n";
 $resStr = <<<ABC
-            if(\$obj->save()){
-                Response::halt([],0,'请求成功');
-            }else{
-                Response::halt([],201,'请求失败');
-            }
+if(\$obj->save()){
+    Response::halt([],0,'请求成功');
+}else{
+    Response::halt([],201,'请求失败');
+}
 ABC;
 
             $str.=$resStr;
